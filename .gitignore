@@ -1,0 +1,17 @@
+# Dependencies and build output
+node_modules
+dist
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+
+# Editor and OS files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
