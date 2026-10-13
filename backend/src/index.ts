@@ -1,17 +1,15 @@
-import "dotenv/config";
-import cors from "cors";
-import express from "express";
+import { app } from "./app";
+import { connectDB } from "./config/prisma";
+import { env } from "./config/env";
 
-const app = express();
-const port = Number(process.env.PORT) || 5000;
+async function start(): Promise<void> {
+  await connectDB();
+  app.listen(env.PORT, () => {
+    console.log(`Retain API listening on http://localhost:${env.PORT}`);
+  });
+}
 
-app.use(cors({ origin: process.env.CLIENT_URL ?? "http://localhost:5173" }));
-app.use(express.json());
-
-app.get("/api/health", (_req, res) => {
-  res.json({ status: "ok" });
-});
-
-app.listen(port, () => {
-  console.log(`Retain API listening on http://localhost:${port}`);
+start().catch((err: unknown) => {
+  console.error("Failed to start server:", err);
+  process.exit(1);
 });

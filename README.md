@@ -10,7 +10,7 @@ A personal expense and budget manager. Users record expenses, set a monthly budg
 |---|---|
 | Frontend | React, TypeScript, Vite, React Router, Redux Toolkit, Material-UI |
 | Backend | Node.js, Express, TypeScript |
-| Database | MongoDB (Mongoose) |
+| Database | PostgreSQL (Prisma ORM) |
 | Auth | JSON Web Tokens, bcrypt |
 
 ## Project structure
@@ -22,7 +22,7 @@ backend/    Express REST API
 
 ## Setup
 
-Requirements: Node.js 20 or newer and a MongoDB connection string.
+Requirements: Node.js 20 or newer and a PostgreSQL database.
 
 ### Backend
 
@@ -30,10 +30,14 @@ Requirements: Node.js 20 or newer and a MongoDB connection string.
 cd backend
 npm install
 cp .env.example .env   # then fill in the values
+npm run db:migrate     # creates the tables
+npm run seed           # creates the default categories and the first admin account
 npm run dev
 ```
 
 The API runs on http://localhost:5000. Check it with `GET /api/health`.
+
+`npm run seed` is safe to run again: it never duplicates categories or the admin.
 
 ### Frontend
 
