@@ -56,4 +56,16 @@ _Filled in as features are built._
 
 ## API
 
-_Endpoint table added as the API is built._
+Base URL: `http://localhost:5000/api`. Protected endpoints need the header `Authorization: Bearer <token>`.
+
+Errors always have the shape `{ "message": string, "errors"?: { field: message } }`.
+
+### Auth
+
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| POST | `/auth/register` | Public | Create an account. Body: `name`, `email`, `password` (min 8). Returns `{ token, user }`. |
+| POST | `/auth/login` | Public | Sign in. Body: `email`, `password`. Returns `{ token, user }`. |
+| GET | `/auth/me` | Signed in | Returns the current `{ user }`. |
+
+_More endpoints added as the API is built._
