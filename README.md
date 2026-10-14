@@ -68,4 +68,52 @@ Errors always have the shape `{ "message": string, "errors"?: { field: message }
 | POST | `/auth/login` | Public | Sign in. Body: `email`, `password`. Returns `{ token, user }`. |
 | GET | `/auth/me` | Signed in | Returns the current `{ user }`. |
 
-_More endpoints added as the API is built._
+### Expenses
+
+All expense endpoints are for signed-in users and only ever touch that user's own expenses. Another user's expense returns 404.
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/expenses` | List with filters, sorting and pagination (query parameters below). Returns `{ data, pagination }`. |
+| GET | `/expenses/:id` | One expense. |
+| POST | `/expenses` | Create. Body: `title`, `amount`, `categoryId`, `date` (YYYY-MM-DD), `paymentMethod`, optional `notes`. |
+| PATCH | `/expenses/:id` | Update. Send only the fields to change. |
+| DELETE | `/expenses/:id` | Delete. Returns 204. |
+
+Query parameters for `GET /expenses`, all optional:
+
+| Parameter | Example | Meaning |
+|---|---|---|
+| `search` | `lunch` | Text in the title or notes, case-insensitive |
+| `categoryId` | `uuid` | One category |
+| `paymentMethod` | `mobile_money` | One of `cash`, `card`, `mobile_money`, `bank_transfer`, `other` |
+| `startDate`, `endDate` | `2026-10-01` | Date range, inclusive |
+| `minAmount`, `maxAmount` | `50` | Amount range, inclusive |
+| `sortBy` | `date` | `date` (default) or `amount` |
+| `sortOrder` | `desc` | `desc` (default) or `asc` |
+| `page`, `limit` | `1`, `10` | Pagination. `limit` is at most 100. |
+
+### Budgets
+
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| GET | `/budgets/:month` | Signed in | Budget summary for a month (YYYY-MM): `amount`, `spent`, `remaining`, `percentUsed`, `status`. |
+| PUT | `/budgets/:month` | Signed in | Set or update the month's budget. Body: `amount`. |
+
+`status` is `none` (no budget set), `within`, `approaching` (80% or more used) or `over`.
+
+### Categories
+
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| GET | `/categories` | Signed in | All categories. |
+| POST | `/categories` | Admin | Create. Body: `name`. Names are unique, ignoring case. |
+| PATCH | `/categories/:id` | Admin | Rename. Body: `name`. |
+| DELETE | `/categories/:id` | Admin | Delete. Its expenses move to "Uncategorized", which itself cannot be renamed or deleted. |
+
+### Dashboards
+
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| GET | `/dashboard?month=YYYY-MM` | Signed in | Total spent, budget summary, highest expense, spending by category and recent expenses for the month (default: current month). |
+| GET | `/admin/insights` | Admin | Total users, total expenses and their value, expenses recorded this month, spending per category, top 5 and bottom 5 categories by use, recent expenses and recent users. |

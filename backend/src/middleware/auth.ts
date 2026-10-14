@@ -49,7 +49,7 @@ export const requireAdmin: RequestHandler = (req, _res, next) => {
 };
 
 /** For use inside routes protected by requireAuth, where the user is guaranteed to exist. */
-export function currentUser(req: Request): AuthUser {
+export function currentUser(req: Pick<Request, "user">): AuthUser {
   if (!req.user) throw new HttpError(401, "Authentication required");
   return req.user;
 }
