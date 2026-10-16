@@ -7,11 +7,14 @@ import { LoadingScreen } from "../LoadingScreen";
  * This only hides admin screens: the backend checks the role again on every admin request.
  */
 export function AdminRoute() {
-  const { user, isAdmin, isLoading } = useAuth();
+  const { user, isAdmin, isLoading, signedOut } = useAuth();
   const location = useLocation();
 
   if (isLoading) return <LoadingScreen />;
-  if (!user) return <Navigate to="/login" replace state={{ from: location.pathname }} />;
+  if (!user) {
+    // After a deliberate log out there is nothing to come back to, so no page is remembered.
+    return <Navigate to="/login" replace state={signedOut ? undefined : { from: location.pathname }} />;
+  }
   if (!isAdmin) return <Navigate to="/dashboard" replace />;
 
   return <Outlet />;
