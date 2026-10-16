@@ -8,6 +8,11 @@ export interface AuthContextValue {
   isAdmin: boolean;
   /** True while a saved token is being checked at startup. Pages wait for it before deciding where to send the user. */
   isLoading: boolean;
+  /**
+   * True right after the user clicked "Log out". Page guards then send them to a clean login page
+   * instead of remembering the page they left, which would send the next person to sign in there.
+   */
+  signedOut: boolean;
   /** Sign in. Resolves with the user, or rejects with an ApiError. */
   login: (input: LoginInput) => Promise<User>;
   /** Create an account and sign in. Resolves with the new user, or rejects with an ApiError. */
