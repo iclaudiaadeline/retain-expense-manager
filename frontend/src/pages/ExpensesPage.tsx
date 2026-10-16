@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlined";
 import { api, ApiError } from "../api/client";
 import { ExpenseFilters } from "../components/expenses/ExpenseFilters";
 import { ExpenseForm } from "../components/expenses/ExpenseForm";

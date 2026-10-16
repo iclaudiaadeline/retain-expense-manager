@@ -4,7 +4,7 @@ import {
   Grid, Stack, Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, Typography, Paper,
 } from "@mui/material";
-import PeopleOutlineIcon from "@mui/icons-material/PeopleOutline";
+import PeopleOutlineIcon from "@mui/icons-material/PeopleOutlined";
 import ReceiptLongOutlinedIcon from "@mui/icons-material/ReceiptLongOutlined";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
