@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import {
-  Alert, Box, Button, Card, CardContent, Chip, Dialog, DialogActions,
-  DialogContent, DialogTitle, IconButton, Stack, TextField, Typography,
-  CircularProgress, List, ListItem, ListItemText, ListItemSecondaryAction,
+  Alert, Box, Button, Card, CardContent, Chip, CircularProgress,
+  Dialog, DialogActions, DialogContent, DialogTitle, Divider,
+  IconButton, Stack, TextField, Typography,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
@@ -15,14 +15,12 @@ export function AdminCategoriesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Create / rename dialog
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Category | null>(null);
   const [name, setName] = useState("");
   const [nameError, setNameError] = useState("");
   const [saving, setSaving] = useState(false);
 
-  // Delete dialog
   const [deleteTarget, setDeleteTarget] = useState<Category | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -75,36 +73,48 @@ export function AdminCategoriesPage() {
   }
 
   return (
-    <Box maxWidth={640}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
-        <Typography variant="h2">Manage Categories</Typography>
-        <Button variant="contained" startIcon={<AddIcon />} onClick={openCreate}>New category</Button>
+    <Box maxWidth={680}>
+      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={4}>
+        <Box>
+          <Typography variant="h2">Categories</Typography>
+          <Typography variant="body2" color="text.secondary" mt={0.5}>
+            Manage expense categories across the platform.
+          </Typography>
+        </Box>
+        <Button variant="contained" startIcon={<AddIcon />} onClick={openCreate}>
+          New category
+        </Button>
       </Stack>
 
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
 
       {loading ? (
-        <Box sx={{ display: "grid", placeItems: "center", py: 8 }}><CircularProgress /></Box>
+        <Box sx={{ display: "grid", placeItems: "center", py: 10 }}>
+          <CircularProgress />
+        </Box>
       ) : (
         <Card>
           <CardContent sx={{ p: 0 }}>
-            <List disablePadding>
-              {categories.map((cat, i) => (
-                <ListItem key={cat.id} divider={i < categories.length - 1}>
-                  <ListItemText
-                    primary={
-                      <Stack direction="row" spacing={1} alignItems="center">
-                        <Typography>{cat.name}</Typography>
-                        {cat.isDefault && <Chip label="default" size="small" color="primary" variant="outlined" />}
-                      </Stack>
-                    }
-                  />
-                  <ListItemSecondaryAction>
+            <Stack divider={<Divider />} spacing={0}>
+              {categories.map((cat) => (
+                <Stack
+                  key={cat.id}
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  sx={{ px: 3, py: 2 }}
+                >
+                  <Stack direction="row" spacing={1.5} alignItems="center">
+                    <Typography variant="body1" fontWeight={500}>{cat.name}</Typography>
+                    {cat.isDefault && (
+                      <Chip label="default" size="small" color="primary" variant="outlined" />
+                    )}
+                  </Stack>
+                  <Stack direction="row" spacing={0.5}>
                     <IconButton
                       size="small"
                       onClick={() => openEdit(cat)}
                       disabled={cat.isDefault}
-                      title={cat.isDefault ? "Cannot rename the default category" : "Rename"}
                     >
                       <EditOutlinedIcon fontSize="small" />
                     </IconButton>
@@ -113,31 +123,34 @@ export function AdminCategoriesPage() {
                       color="error"
                       onClick={() => { setDeleteError(null); setDeleteTarget(cat); }}
                       disabled={cat.isDefault}
-                      title={cat.isDefault ? "Cannot delete the default category" : "Delete"}
                     >
                       <DeleteOutlineIcon fontSize="small" />
                     </IconButton>
-                  </ListItemSecondaryAction>
-                </ListItem>
+                  </Stack>
+                </Stack>
               ))}
-            </List>
+            </Stack>
           </CardContent>
         </Card>
       )}
 
-      {/* Create / rename dialog */}
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} fullWidth maxWidth="xs">
-        <DialogTitle>{editing ? "Rename category" : "New category"}</DialogTitle>
-        <DialogContent>
+        <DialogTitle sx={{ pb: 1 }}>
+          {editing ? "Rename category" : "New category"}
+        </DialogTitle>
+        <DialogContent sx={{ pt: "12px !important" }}>
           <TextField
-            autoFocus fullWidth label="Category name" value={name}
+            autoFocus
+            fullWidth
+            label="Category name"
+            value={name}
             onChange={(e) => setName(e.target.value)}
-            error={Boolean(nameError)} helperText={nameError}
-            sx={{ mt: 1 }}
+            error={Boolean(nameError)}
+            helperText={nameError}
             onKeyDown={(e) => { if (e.key === "Enter") handleSave(); }}
           />
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={{ px: 3, pb: 2.5 }}>
           <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
           <Button variant="contained" onClick={handleSave} disabled={saving}>
             {saving ? "Saving..." : "Save"}
@@ -145,17 +158,16 @@ export function AdminCategoriesPage() {
         </DialogActions>
       </Dialog>
 
-      {/* Delete confirmation dialog */}
-      <Dialog open={Boolean(deleteTarget)} onClose={() => setDeleteTarget(null)}>
-        <DialogTitle>Delete category?</DialogTitle>
-        <DialogContent>
-          <Typography>
-            Delete <strong>{deleteTarget?.name}</strong>? All expenses in this category will be moved to{" "}
-            <strong>Uncategorized</strong>.
+      <Dialog open={Boolean(deleteTarget)} onClose={() => setDeleteTarget(null)} maxWidth="xs" fullWidth>
+        <DialogTitle sx={{ pb: 1 }}>Delete category?</DialogTitle>
+        <DialogContent sx={{ pt: "12px !important" }}>
+          <Typography variant="body2">
+            Deleting <strong>{deleteTarget?.name}</strong> will move all its expenses to{" "}
+            <strong>Uncategorized</strong>. This cannot be undone.
           </Typography>
           {deleteError && <Alert severity="error" sx={{ mt: 2 }}>{deleteError}</Alert>}
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={{ px: 3, pb: 2.5 }}>
           <Button onClick={() => setDeleteTarget(null)}>Cancel</Button>
           <Button color="error" variant="contained" onClick={handleDelete} disabled={deleting}>
             {deleting ? "Deleting..." : "Delete"}
