@@ -39,7 +39,11 @@ export function ExpenseFilters() {
         <TextField select fullWidth size="small" label="Payment" value={filters.paymentMethod}
           onChange={(e) => set("paymentMethod", e.target.value as typeof filters.paymentMethod)}>
           <MenuItem value="">All</MenuItem>
-          {PAYMENT_METHODS.map((m) => <MenuItem key={m} value={m}>{m.replace("_", " ")}</MenuItem>)}
+          {PAYMENT_METHODS.map((m) => (
+            <MenuItem key={m} value={m}>
+              {m.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
+            </MenuItem>
+          ))}
         </TextField>
       </Grid>
       <Grid size={{ xs: 6, sm: 3, md: 2 }}>
