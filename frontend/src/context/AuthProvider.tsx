@@ -8,11 +8,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   // Only "loading" at startup if there is a saved token to check.
   const [isLoading, setIsLoading] = useState<boolean>(() => getToken() !== null);
+  const [signedOut, setSignedOut] = useState(false);
 
-  const logout = useCallback(() => {
+  /** Forgets the token and the user. */
+  const clearSession = useCallback(() => {
     setToken(null);
     setUser(null);
   }, []);
+
+  /** A deliberate sign out, from the "Log out" button. */
+  const logout = useCallback(() => {
+    clearSession();
+    setSignedOut(true);
+  }, [clearSession]);
 
   // On first load, turn a saved token back into a user, so a page refresh keeps you signed in.
   useEffect(() => {
@@ -37,15 +45,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  // If any request later answers 401 (for example the token expired), sign the user out.
+  // If any request later answers 401 (the token expired), end the session without marking it as a sign out:
+  // the page guard then remembers the current page, so the user comes straight back after signing in again.
   useEffect(() => {
-    setUnauthorizedHandler(logout);
+    setUnauthorizedHandler(clearSession);
     return () => setUnauthorizedHandler(null);
-  }, [logout]);
+  }, [clearSession]);
 
   const startSession = useCallback(({ token, user }: AuthResponse): User => {
     setToken(token);
     setUser(user);
+    setSignedOut(false);
     return user;
   }, []);
 
@@ -60,8 +70,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   const value = useMemo<AuthContextValue>(
-    () => ({ user, isAdmin: user?.role === "admin", isLoading, login, register, logout }),
-    [user, isLoading, login, register, logout],
+    () => ({ user, isAdmin: user?.role === "admin", isLoading, signedOut, login, register, logout }),
+    [user, isLoading, signedOut, login, register, logout],
   );
 
   return <AuthContext value={value}>{children}</AuthContext>;
