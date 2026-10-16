@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import {
-  Alert, Box, Card, CardContent, Chip, CircularProgress,
-  Grid, Stack, Table, TableBody, TableCell,
-  TableContainer, TableHead, TableRow, Typography, Paper,
+  Alert, Box, Card, CardContent, Chip, CircularProgress, Divider,
+  Grid, Stack, Table, TableBody, TableCell, TableContainer,
+  TableHead, TableRow, Typography,
 } from "@mui/material";
-import PeopleOutlineIcon from "@mui/icons-material/PeopleOutlined";
+import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
 import ReceiptLongOutlinedIcon from "@mui/icons-material/ReceiptLongOutlined";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
@@ -23,39 +23,41 @@ export function AdminInsightsPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <Box sx={{ display: "grid", placeItems: "center", py: 8 }}><CircularProgress /></Box>;
-  if (error) return <Alert severity="error">{error}</Alert>;
-  if (!data) return null;
+  if (loading) return <Box sx={{ display: "grid", placeItems: "center", py: 10 }}><CircularProgress /></Box>;
+  if (error)   return <Alert severity="error">{error}</Alert>;
+  if (!data)   return null;
 
   return (
     <Box>
-      <Typography variant="h2" mb={3}>Platform Insights</Typography>
+      <Typography variant="h2" mb={4}>Platform Insights</Typography>
 
-      {/* Top stats */}
-      <Grid container spacing={2} mb={3}>
+      <Grid container spacing={2.5} mb={4}>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <StatCard icon={<PeopleOutlineIcon color="primary" />} label="Total users" value={data.totalUsers} />
+          <StatCard icon={<PeopleOutlinedIcon />} iconBg="#e3f2fd" iconColor="#1565c0"
+            label="Total users" value={data.totalUsers} />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <StatCard icon={<ReceiptLongOutlinedIcon color="primary" />} label="Total expenses" value={data.totalExpenses} />
+          <StatCard icon={<ReceiptLongOutlinedIcon />} iconBg="#e8f5e9" iconColor="#2e7d32"
+            label="Total expenses" value={data.totalExpenses} />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <StatCard icon={<AttachMoneyIcon color="primary" />} label="Total value" value={`$${data.totalValue.toFixed(2)}`} />
+          <StatCard icon={<AttachMoneyIcon />} iconBg="#fff8e1" iconColor="#f57f17"
+            label="Total value" value={`$${data.totalValue.toFixed(2)}`} />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <StatCard icon={<CalendarTodayOutlinedIcon color="primary" />} label="This month" value={data.expensesThisMonth} />
+          <StatCard icon={<CalendarTodayOutlinedIcon />} iconBg="#fce4ec" iconColor="#c62828"
+            label="Expenses this month" value={data.expensesThisMonth} />
         </Grid>
       </Grid>
 
-      <Grid container spacing={2} mb={3}>
-        {/* Spending per category */}
+      <Grid container spacing={2.5} mb={4}>
         <Grid size={{ xs: 12, md: 4 }}>
           <Card sx={{ height: "100%" }}>
             <CardContent>
-              <Typography variant="h3" mb={2}>Spending per category</Typography>
-              <Stack spacing={1}>
+              <Typography variant="h3" mb={2.5}>Spending per category</Typography>
+              <Stack spacing={2}>
                 {data.spendingPerCategory.map((c) => (
-                  <Stack key={c.categoryId} direction="row" justifyContent="space-between">
+                  <Stack key={c.categoryId} direction="row" justifyContent="space-between" alignItems="center">
                     <Typography variant="body2">{c.name}</Typography>
                     <Typography variant="body2" fontWeight={600}>${c.total.toFixed(2)}</Typography>
                   </Stack>
@@ -65,19 +67,18 @@ export function AdminInsightsPage() {
           </Card>
         </Grid>
 
-        {/* Top 5 categories */}
         <Grid size={{ xs: 12, sm: 6, md: 4 }}>
           <Card sx={{ height: "100%" }}>
             <CardContent>
-              <Typography variant="h3" mb={2}>Top 5 categories</Typography>
-              <Stack spacing={1}>
+              <Typography variant="h3" mb={2.5}>Top 5 categories</Typography>
+              <Stack spacing={2}>
                 {data.topCategories.map((c, i) => (
-                  <Stack key={c.categoryId} direction="row" justifyContent="space-between" alignItems="center">
-                    <Stack direction="row" spacing={1} alignItems="center">
-                      <Typography variant="caption" color="text.secondary">#{i + 1}</Typography>
-                      <Typography variant="body2">{c.name}</Typography>
-                    </Stack>
-                    <Chip label={`${c.count} expenses`} size="small" color="primary" variant="outlined" />
+                  <Stack key={c.categoryId} direction="row" alignItems="center">
+                    <Typography variant="caption" color="text.disabled" sx={{ minWidth: 24 }}>
+                      #{i + 1}
+                    </Typography>
+                    <Typography variant="body2" sx={{ flex: 1 }}>{c.name}</Typography>
+                    <Chip label={`${c.count} expenses`} size="small" color="primary" variant="outlined" sx={{ minWidth: 90, justifyContent: "center" }} />
                   </Stack>
                 ))}
               </Stack>
@@ -85,19 +86,18 @@ export function AdminInsightsPage() {
           </Card>
         </Grid>
 
-        {/* Bottom 5 categories */}
         <Grid size={{ xs: 12, sm: 6, md: 4 }}>
           <Card sx={{ height: "100%" }}>
             <CardContent>
-              <Typography variant="h3" mb={2}>Bottom 5 categories</Typography>
-              <Stack spacing={1}>
+              <Typography variant="h3" mb={2.5}>Bottom 5 categories</Typography>
+              <Stack spacing={2}>
                 {data.bottomCategories.map((c, i) => (
-                  <Stack key={c.categoryId} direction="row" justifyContent="space-between" alignItems="center">
-                    <Stack direction="row" spacing={1} alignItems="center">
-                      <Typography variant="caption" color="text.secondary">#{i + 1}</Typography>
-                      <Typography variant="body2">{c.name}</Typography>
-                    </Stack>
-                    <Chip label={`${c.count} expenses`} size="small" variant="outlined" />
+                  <Stack key={c.categoryId} direction="row" alignItems="center">
+                    <Typography variant="caption" color="text.disabled" sx={{ minWidth: 24 }}>
+                      #{i + 1}
+                    </Typography>
+                    <Typography variant="body2" sx={{ flex: 1 }}>{c.name}</Typography>
+                    <Chip label={`${c.count} expenses`} size="small" variant="outlined" sx={{ minWidth: 90, justifyContent: "center" }} />
                   </Stack>
                 ))}
               </Stack>
@@ -106,16 +106,15 @@ export function AdminInsightsPage() {
         </Grid>
       </Grid>
 
-      <Grid container spacing={2}>
-        {/* Recent expenses */}
+      <Grid container spacing={2.5}>
         <Grid size={{ xs: 12, md: 7 }}>
           <Card>
             <CardContent>
-              <Typography variant="h3" mb={2}>Recent expenses</Typography>
-              <TableContainer component={Paper} variant="outlined">
-                <Table size="small">
+              <Typography variant="h3" mb={2.5}>Recent expenses</Typography>
+              <TableContainer>
+                <Table>
                   <TableHead>
-                    <TableRow>
+                    <TableRow sx={{ bgcolor: "grey.50" }}>
                       <TableCell>Title</TableCell>
                       <TableCell>User</TableCell>
                       <TableCell>Category</TableCell>
@@ -128,8 +127,12 @@ export function AdminInsightsPage() {
                       <TableRow key={exp.id} hover>
                         <TableCell>{exp.title}</TableCell>
                         <TableCell>{exp.user.name}</TableCell>
-                        <TableCell><Chip label={exp.category.name} size="small" /></TableCell>
-                        <TableCell align="right">${exp.amount.toFixed(2)}</TableCell>
+                        <TableCell>
+                          <Chip label={exp.category.name} size="small" variant="outlined" />
+                        </TableCell>
+                        <TableCell align="right" sx={{ fontWeight: 600 }}>
+                          ${exp.amount.toFixed(2)}
+                        </TableCell>
                         <TableCell>{exp.date}</TableCell>
                       </TableRow>
                     ))}
@@ -140,19 +143,23 @@ export function AdminInsightsPage() {
           </Card>
         </Grid>
 
-        {/* Recent users */}
         <Grid size={{ xs: 12, md: 5 }}>
           <Card>
             <CardContent>
-              <Typography variant="h3" mb={2}>Recent users</Typography>
-              <Stack spacing={1.5}>
+              <Typography variant="h3" mb={2.5}>Recent users</Typography>
+              <Stack divider={<Divider />} spacing={0}>
                 {data.recentUsers.map((u) => (
-                  <Stack key={u.id} direction="row" justifyContent="space-between" alignItems="center">
+                  <Stack key={u.id} direction="row" justifyContent="space-between"
+                    alignItems="center" sx={{ py: 1.5 }}>
                     <Box>
                       <Typography variant="body2" fontWeight={500}>{u.name}</Typography>
                       <Typography variant="caption" color="text.secondary">{u.email}</Typography>
                     </Box>
-                    <Chip label={u.role} size="small" color={u.role === "admin" ? "secondary" : "default"} />
+                    <Chip
+                      label={u.role}
+                      size="small"
+                      color={u.role === "admin" ? "secondary" : "default"}
+                    />
                   </Stack>
                 ))}
               </Stack>
@@ -164,15 +171,23 @@ export function AdminInsightsPage() {
   );
 }
 
-function StatCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: string | number }) {
+function StatCard({ icon, iconBg, iconColor, label, value }: {
+  icon: React.ReactNode;
+  iconBg: string;
+  iconColor: string;
+  label: string;
+  value: string | number;
+}) {
   return (
     <Card>
       <CardContent>
-        <Stack direction="row" spacing={1.5} alignItems="center" mb={1}>
-          {icon}
+        <Stack direction="row" spacing={2} alignItems="center" mb={1.5}>
+          <Box sx={{ p: 1.25, borderRadius: 2, bgcolor: iconBg, color: iconColor, display: "flex" }}>
+            {icon}
+          </Box>
           <Typography variant="body2" color="text.secondary">{label}</Typography>
         </Stack>
-        <Typography variant="h2">{value}</Typography>
+        <Typography fontWeight={700} fontSize="1.5rem">{value}</Typography>
       </CardContent>
     </Card>
   );
