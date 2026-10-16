@@ -1,23 +1,27 @@
 import { useCallback, useEffect, useState } from "react";
-import { useAppDispatch } from "../store/store";
 import {
-  Alert, Box, Button, Chip, CircularProgress, Dialog, DialogActions,
-  DialogContent, DialogTitle, IconButton, Pagination, Paper, Stack,
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography,
+  Alert, Box, Button, Chip, CircularProgress, Collapse, Dialog,
+  DialogActions, DialogContent, DialogTitle, Divider, IconButton,
+  Pagination, Paper, Stack, Table, TableBody, TableCell,
+  TableContainer, TableHead, TableRow, Typography,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlined";
+import FilterListIcon from "@mui/icons-material/FilterList";
 import { api, ApiError } from "../api/client";
 import { ExpenseFilters } from "../components/expenses/ExpenseFilters";
 import { ExpenseForm } from "../components/expenses/ExpenseForm";
-import { useAppSelector } from "../store/store";
+import { useAppDispatch, useAppSelector } from "../store/store";
 import { resetFilters, setFilter, toExpenseQuery } from "../store/filtersSlice";
 import type { Expense, Paginated } from "../types/api";
 
 const METHOD_LABELS: Record<string, string> = {
-  cash: "Cash", card: "Card", mobile_money: "Mobile money",
-  bank_transfer: "Bank transfer", other: "Other",
+  cash: "Cash",
+  card: "Card",
+  mobile_money: "Mobile money",
+  bank_transfer: "Bank transfer",
+  other: "Other",
 };
 
 export function ExpensesPage() {
@@ -30,6 +34,7 @@ export function ExpensesPage() {
   const [editing, setEditing] = useState<Expense | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Expense | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -61,84 +66,159 @@ export function ExpensesPage() {
     }
   }
 
+  const activeFilterCount = [
+    filters.search, filters.categoryId, filters.paymentMethod,
+    filters.startDate, filters.endDate, filters.minAmount, filters.maxAmount,
+  ].filter(Boolean).length;
+
   return (
     <Box>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
-        <Typography variant="h2">Expenses</Typography>
-        <Button variant="contained" startIcon={<AddIcon />} onClick={openCreate}>Add expense</Button>
+      <Stack
+        direction={{ xs: "column", sm: "row" }}
+        justifyContent="space-between"
+        alignItems={{ xs: "flex-start", sm: "center" }}
+        gap={2}
+        mb={3}
+      >
+        <Box>
+          <Typography variant="h2">Expenses</Typography>
+          {data && (
+            <Typography variant="body2" color="text.secondary" mt={0.5}>
+              {data.pagination.total} record{data.pagination.total !== 1 ? "s" : ""}
+            </Typography>
+          )}
+        </Box>
+        <Stack direction="row" spacing={1}>
+          <Button
+            variant="outlined"
+            startIcon={<FilterListIcon />}
+            onClick={() => setFiltersOpen((o) => !o)}
+            color={activeFilterCount > 0 ? "primary" : "inherit"}
+          >
+            {activeFilterCount > 0 ? `Filters (${activeFilterCount})` : "Filters"}
+          </Button>
+          <Button variant="contained" startIcon={<AddIcon />} onClick={openCreate}>
+            Add expense
+          </Button>
+        </Stack>
       </Stack>
 
-      <Paper sx={{ p: 2, mb: 2 }}>
-        <ExpenseFilters />
-      </Paper>
+      <Collapse in={filtersOpen}>
+        <Paper variant="outlined" sx={{ p: 2.5, mb: 2.5, borderRadius: 2 }}>
+          <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
+            <Typography variant="subtitle2">Filter & sort</Typography>
+            <Button size="small" onClick={() => dispatch(resetFilters())}>Reset</Button>
+          </Stack>
+          <ExpenseFilters />
+        </Paper>
+      </Collapse>
 
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
       {loading ? (
-        <Box sx={{ display: "grid", placeItems: "center", py: 8 }}><CircularProgress /></Box>
+        <Box sx={{ display: "grid", placeItems: "center", py: 10 }}>
+          <CircularProgress />
+        </Box>
       ) : (
-        <>
-          <TableContainer component={Paper}>
-            <Table size="small">
+        <Paper variant="outlined" sx={{ borderRadius: 2, overflow: "hidden" }}>
+          <TableContainer>
+            <Table>
               <TableHead>
-                <TableRow>
-                  <TableCell>Title</TableCell>
-                  <TableCell>Category</TableCell>
-                  <TableCell>Date</TableCell>
-                  <TableCell>Payment</TableCell>
-                  <TableCell align="right">Amount</TableCell>
-                  <TableCell align="right">Actions</TableCell>
+                <TableRow sx={{ bgcolor: "grey.50" }}>
+                  <TableCell sx={{ fontWeight: 600 }}>Title</TableCell>
+                  <TableCell sx={{ fontWeight: 600 }}>Category</TableCell>
+                  <TableCell sx={{ fontWeight: 600 }}>Date</TableCell>
+                  <TableCell sx={{ fontWeight: 600 }}>Payment</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 600 }}>Amount</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 600 }}>Actions</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {data?.data.length === 0 && (
+                {data?.data.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6} align="center" sx={{ py: 4, color: "text.secondary" }}>
-                      No expenses found.
+                    <TableCell colSpan={6}>
+                      <Box sx={{ py: 6, textAlign: "center" }}>
+                        <Typography color="text.secondary">No expenses found.</Typography>
+                      </Box>
                     </TableCell>
                   </TableRow>
+                ) : (
+                  data?.data.map((exp) => (
+                    <TableRow key={exp.id} hover>
+                      <TableCell sx={{ maxWidth: 220 }}>
+                        <Typography variant="body2" fontWeight={500} noWrap>{exp.title}</Typography>
+                        {exp.notes && (
+                          <Typography variant="caption" color="text.secondary" noWrap display="block">
+                            {exp.notes}
+                          </Typography>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Chip label={exp.category.name} size="small" variant="outlined" />
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2">{exp.date}</Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2">
+                          {METHOD_LABELS[exp.paymentMethod] ?? exp.paymentMethod}
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="right">
+                        <Typography variant="body2" fontWeight={600}>
+                          ${exp.amount.toFixed(2)}
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>
+                        <IconButton size="small" onClick={() => openEdit(exp)}>
+                          <EditOutlinedIcon fontSize="small" />
+                        </IconButton>
+                        <IconButton size="small" color="error" onClick={() => setDeleteTarget(exp)}>
+                          <DeleteOutlineIcon fontSize="small" />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))
                 )}
-                {data?.data.map((exp) => (
-                  <TableRow key={exp.id} hover>
-                    <TableCell>
-                      <Typography variant="body2" fontWeight={500}>{exp.title}</Typography>
-                      {exp.notes && <Typography variant="caption" color="text.secondary">{exp.notes}</Typography>}
-                    </TableCell>
-                    <TableCell><Chip label={exp.category.name} size="small" /></TableCell>
-                    <TableCell>{exp.date}</TableCell>
-                    <TableCell>{METHOD_LABELS[exp.paymentMethod] ?? exp.paymentMethod}</TableCell>
-                    <TableCell align="right"><Typography fontWeight={600}>${exp.amount.toFixed(2)}</Typography></TableCell>
-                    <TableCell align="right">
-                      <IconButton size="small" onClick={() => openEdit(exp)}><EditOutlinedIcon fontSize="small" /></IconButton>
-                      <IconButton size="small" color="error" onClick={() => setDeleteTarget(exp)}><DeleteOutlineIcon fontSize="small" /></IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))}
               </TableBody>
             </Table>
           </TableContainer>
 
           {data && data.pagination.totalPages > 1 && (
-            <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-              <Pagination
-                count={data.pagination.totalPages}
-                page={data.pagination.page}
-                onChange={(_, p) => dispatch(setFilter({ key: "page", value: p }))}
-                color="primary"
-              />
-            </Box>
+            <>
+              <Divider />
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                sx={{ px: 2, py: 1.5 }}
+              >
+                <Typography variant="caption" color="text.secondary">
+                  Page {data.pagination.page} of {data.pagination.totalPages}
+                </Typography>
+                <Pagination
+                  count={data.pagination.totalPages}
+                  page={data.pagination.page}
+                  onChange={(_, p) => dispatch(setFilter({ key: "page", value: p }))}
+                  color="primary"
+                  size="small"
+                />
+              </Stack>
+            </>
           )}
-        </>
+        </Paper>
       )}
 
       <ExpenseForm open={formOpen} onClose={() => setFormOpen(false)} onSaved={load} expense={editing} />
 
-      <Dialog open={Boolean(deleteTarget)} onClose={() => setDeleteTarget(null)}>
+      <Dialog open={Boolean(deleteTarget)} onClose={() => setDeleteTarget(null)} maxWidth="xs" fullWidth>
         <DialogTitle>Delete expense?</DialogTitle>
         <DialogContent>
-          <Typography>Are you sure you want to delete <strong>{deleteTarget?.title}</strong>? This cannot be undone.</Typography>
+          <Typography>
+            Are you sure you want to delete <strong>{deleteTarget?.title}</strong>? This cannot be undone.
+          </Typography>
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
           <Button onClick={() => setDeleteTarget(null)}>Cancel</Button>
           <Button color="error" variant="contained" onClick={handleDelete} disabled={deleting}>
             {deleting ? "Deleting..." : "Delete"}
