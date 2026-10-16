@@ -93,7 +93,9 @@ export function ExpenseForm({ open, onClose, onSaved, expense }: Props) {
           </TextField>
           <TextField select label="Payment method" value={form.paymentMethod} onChange={(e) => set("paymentMethod", e.target.value as PaymentMethod)} fullWidth>
             {PAYMENT_METHODS.map((m) => (
-              <MenuItem key={m} value={m}>{m.replace("_", " ")}</MenuItem>
+              <MenuItem key={m} value={m}>
+                {m.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
+              </MenuItem>
             ))}
           </TextField>
           <TextField label="Notes (optional)" value={form.notes ?? ""} onChange={(e) => set("notes", e.target.value)}
