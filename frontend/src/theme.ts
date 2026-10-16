@@ -28,29 +28,25 @@ export const theme = createTheme({
     },
     MuiCard: {
       defaultProps: { variant: "outlined" },
-      styleOverrides: {
-        root: { borderRadius: 12 },
-      },
+      styleOverrides: { root: { borderRadius: 12 } },
     },
     MuiCardContent: {
       styleOverrides: {
         root: {
-          padding: "20px 24px",
-          "&:last-child": { paddingBottom: "20px" },
+          padding: "24px",
+          "&:last-child": { paddingBottom: "24px" },
         },
       },
     },
     MuiTableCell: {
       styleOverrides: {
-        root: { padding: "12px 16px" },
-        head: { fontWeight: 600, fontSize: "0.8125rem", color: "#6b7280" },
+        root: { padding: "13px 16px" },
+        head: { fontWeight: 600, fontSize: "0.8125rem", color: "#6b7280", backgroundColor: "#f9fafb" },
       },
     },
     MuiTableRow: {
       styleOverrides: {
-        root: {
-          "&:last-child td": { borderBottom: 0 },
-        },
+        root: { "&:last-child td": { borderBottom: 0 } },
       },
     },
     MuiChip: {
@@ -63,18 +59,22 @@ export const theme = createTheme({
       defaultProps: { size: "small" },
     },
     MuiListItemButton: {
-      styleOverrides: {
-        root: { borderRadius: 8 },
-      },
+      styleOverrides: { root: { borderRadius: 8 } },
     },
     MuiDivider: {
-      styleOverrides: {
-        root: { borderColor: "#e5e7eb" },
-      },
+      styleOverrides: { root: { borderColor: "#e5e7eb" } },
     },
     MuiPaper: {
+      styleOverrides: { outlined: { borderColor: "#e5e7eb" } },
+    },
+    // Green top navbar
+    MuiAppBar: {
       styleOverrides: {
-        outlined: { borderColor: "#e5e7eb" },
+        root: {
+          backgroundColor: "#0f766e",
+          color: "#ffffff",
+          borderBottom: "none",
+        },
       },
     },
   },
