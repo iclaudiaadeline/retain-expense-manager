@@ -2,35 +2,40 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 import { AdminRoute } from "./components/routing/AdminRoute";
 import { GuestRoute } from "./components/routing/GuestRoute";
 import { ProtectedRoute } from "./components/routing/ProtectedRoute";
+import { AppLayout } from "./components/layout/AppLayout";
 import { LoginPage } from "./pages/LoginPage";
-import { PlaceholderPage } from "./pages/PlaceholderPage";
 import { RegisterPage } from "./pages/RegisterPage";
+import { DashboardPage } from "./pages/DashboardPage";
+import { ExpensesPage } from "./pages/ExpensesPage";
+import { BudgetPage } from "./pages/BudgetPage";
+import { AdminInsightsPage } from "./pages/admin/AdminInsightsPage";
+import { AdminCategoriesPage } from "./pages/admin/AdminCategoriesPage";
 
-/** Every page of the app, each placed behind the guard that decides who may open it. */
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Only for visitors who are not signed in */}
+        {/* Guest only */}
         <Route element={<GuestRoute />}>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
         </Route>
 
-        {/* Any signed-in user */}
+        {/* Signed-in users — wrapped in the app shell */}
         <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={<PlaceholderPage title="Dashboard" />} />
-          <Route path="/expenses" element={<PlaceholderPage title="Expenses" />} />
-          <Route path="/budget" element={<PlaceholderPage title="Budget" />} />
+          <Route element={<AppLayout />}>
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/expenses" element={<ExpensesPage />} />
+            <Route path="/budget" element={<BudgetPage />} />
+
+            {/* Admin only */}
+            <Route element={<AdminRoute />}>
+              <Route path="/admin" element={<AdminInsightsPage />} />
+              <Route path="/admin/categories" element={<AdminCategoriesPage />} />
+            </Route>
+          </Route>
         </Route>
 
-        {/* Admins only */}
-        <Route element={<AdminRoute />}>
-          <Route path="/admin" element={<PlaceholderPage title="Admin dashboard" />} />
-          <Route path="/admin/categories" element={<PlaceholderPage title="Manage categories" />} />
-        </Route>
-
-        {/* The home address and any unknown address lead to the dashboard (or to login if signed out). */}
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
