@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import {
-  Alert, Box, Button, Card, CardContent, Chip, CircularProgress,
+  Alert, Box, Button, Card, Chip, CircularProgress,
   Dialog, DialogActions, DialogContent, DialogTitle, Divider,
   IconButton, Stack, TextField, Typography,
 } from "@mui/material";
@@ -73,12 +73,14 @@ export function AdminCategoriesPage() {
   }
 
   return (
-    <Box maxWidth={680}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" mb={4}>
+    <Box>
+      {/* Page header */}
+      <Stack direction={{ xs: "column", sm: "row" }} justifyContent="space-between"
+        alignItems={{ xs: "flex-start", sm: "center" }} gap={2} mb={4}>
         <Box>
           <Typography variant="h2">Categories</Typography>
           <Typography variant="body2" color="text.secondary" mt={0.5}>
-            Manage expense categories across the platform.
+            {categories.length} {categories.length === 1 ? "category" : "categories"} on the platform
           </Typography>
         </Box>
         <Button variant="contained" startIcon={<AddIcon />} onClick={openCreate}>
@@ -93,8 +95,8 @@ export function AdminCategoriesPage() {
           <CircularProgress />
         </Box>
       ) : (
-        <Card>
-          <CardContent sx={{ p: 0 }}>
+        <Box maxWidth={640}>
+          <Card>
             <Stack divider={<Divider />} spacing={0}>
               {categories.map((cat) => (
                 <Stack
@@ -102,55 +104,43 @@ export function AdminCategoriesPage() {
                   direction="row"
                   justifyContent="space-between"
                   alignItems="center"
-                  sx={{ px: 3, py: 2 }}
+                  sx={{ px: 3, py: 2.5 }}
                 >
                   <Stack direction="row" spacing={1.5} alignItems="center">
-                    <Typography variant="body1" fontWeight={500}>{cat.name}</Typography>
+                    <Typography variant="body2" fontWeight={500}>{cat.name}</Typography>
                     {cat.isDefault && (
                       <Chip label="default" size="small" color="primary" variant="outlined" />
                     )}
                   </Stack>
-                  <Stack direction="row" spacing={0.5}>
-                    <IconButton
-                      size="small"
-                      onClick={() => openEdit(cat)}
-                      disabled={cat.isDefault}
-                    >
+                  <Stack direction="row" spacing={0.5} sx={{ flexShrink: 0 }}>
+                    <IconButton size="small" onClick={() => openEdit(cat)} disabled={cat.isDefault}>
                       <EditOutlinedIcon fontSize="small" />
                     </IconButton>
-                    <IconButton
-                      size="small"
-                      color="error"
+                    <IconButton size="small" color="error"
                       onClick={() => { setDeleteError(null); setDeleteTarget(cat); }}
-                      disabled={cat.isDefault}
-                    >
+                      disabled={cat.isDefault}>
                       <DeleteOutlineIcon fontSize="small" />
                     </IconButton>
                   </Stack>
                 </Stack>
               ))}
             </Stack>
-          </CardContent>
-        </Card>
+          </Card>
+        </Box>
       )}
 
+      {/* Create / rename dialog */}
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} fullWidth maxWidth="xs">
-        <DialogTitle sx={{ pb: 1 }}>
-          {editing ? "Rename category" : "New category"}
-        </DialogTitle>
-        <DialogContent sx={{ pt: "12px !important" }}>
+        <DialogTitle>{editing ? "Rename category" : "New category"}</DialogTitle>
+        <DialogContent sx={{ pt: "16px !important" }}>
           <TextField
-            autoFocus
-            fullWidth
-            label="Category name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            error={Boolean(nameError)}
-            helperText={nameError}
+            autoFocus fullWidth label="Category name"
+            value={name} onChange={(e) => setName(e.target.value)}
+            error={Boolean(nameError)} helperText={nameError}
             onKeyDown={(e) => { if (e.key === "Enter") handleSave(); }}
           />
         </DialogContent>
-        <DialogActions sx={{ px: 3, pb: 2.5 }}>
+        <DialogActions sx={{ px: 3, pb: 3 }}>
           <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
           <Button variant="contained" onClick={handleSave} disabled={saving}>
             {saving ? "Saving..." : "Save"}
@@ -158,16 +148,17 @@ export function AdminCategoriesPage() {
         </DialogActions>
       </Dialog>
 
+      {/* Delete confirmation dialog */}
       <Dialog open={Boolean(deleteTarget)} onClose={() => setDeleteTarget(null)} maxWidth="xs" fullWidth>
-        <DialogTitle sx={{ pb: 1 }}>Delete category?</DialogTitle>
-        <DialogContent sx={{ pt: "12px !important" }}>
+        <DialogTitle>Delete category?</DialogTitle>
+        <DialogContent sx={{ pt: "16px !important" }}>
           <Typography variant="body2">
             Deleting <strong>{deleteTarget?.name}</strong> will move all its expenses to{" "}
             <strong>Uncategorized</strong>. This cannot be undone.
           </Typography>
           {deleteError && <Alert severity="error" sx={{ mt: 2 }}>{deleteError}</Alert>}
         </DialogContent>
-        <DialogActions sx={{ px: 3, pb: 2.5 }}>
+        <DialogActions sx={{ px: 3, pb: 3 }}>
           <Button onClick={() => setDeleteTarget(null)}>Cancel</Button>
           <Button color="error" variant="contained" onClick={handleDelete} disabled={deleting}>
             {deleting ? "Deleting..." : "Delete"}
