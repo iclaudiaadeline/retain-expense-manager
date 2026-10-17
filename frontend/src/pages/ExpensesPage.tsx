@@ -78,7 +78,7 @@ export function ExpensesPage() {
         justifyContent="space-between"
         alignItems={{ xs: "flex-start", sm: "center" }}
         gap={2}
-        mb={3}
+        mb={4}
       >
         <Box>
           <Typography variant="h2">Expenses</Typography>
