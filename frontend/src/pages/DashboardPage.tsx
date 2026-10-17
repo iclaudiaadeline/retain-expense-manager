@@ -38,28 +38,19 @@ export function DashboardPage() {
 
   return (
     <Box>
-      <Stack
-        direction={{ xs: "column", sm: "row" }}
-        justifyContent="space-between"
-        alignItems={{ xs: "flex-start", sm: "center" }}
-        gap={2}
-        mb={3}
-      >
-        <Box>
-          <Typography variant="h2">Dashboard</Typography>
-          <Typography variant="body2" color="text.secondary" mt={0.5}>
-            Welcome back, {user?.name}
-          </Typography>
-        </Box>
+      <Stack direction="row" alignItems="center" gap={2} mb={4} flexWrap="wrap">
         <TextField
           type="month"
           label="Month"
           value={month}
           onChange={(e) => setMonth(e.target.value)}
           size="small"
-          sx={{ minWidth: 180 }}
+          sx={{ minWidth: 160 }}
           slotProps={{ inputLabel: { shrink: true } }}
         />
+        <Typography variant="body2" color="text.secondary">
+          Welcome back, {user?.name}
+        </Typography>
       </Stack>
 
       {loading ? (
@@ -69,8 +60,8 @@ export function DashboardPage() {
       ) : error ? (
         <Alert severity="error">{error}</Alert>
       ) : data ? (
-        <Stack spacing={3}>
-          <Grid container spacing={2}>
+        <Stack spacing={3.5}>
+          <Grid container spacing={2.5}>
             <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
               <StatCard
                 icon={<TrendingUpIcon />}
@@ -143,7 +134,7 @@ export function DashboardPage() {
             </Card>
           )}
 
-          <Grid container spacing={2} alignItems="stretch">
+          <Grid container spacing={2.5} alignItems="stretch">
             <Grid size={{ xs: 12, md: 6 }}>
               <Card sx={{ height: "100%" }}>
                 <CardContent>
