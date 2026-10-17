@@ -14,6 +14,12 @@ const STATUS_LABEL: Record<string, string> = {
   within: "Within budget", approaching: "Approaching limit", over: "Over budget", none: "No budget set",
 };
 
+// LinearProgress has no "default" color, so fall back to "inherit"
+function progressColor(status: string) {
+  const color = STATUS_COLOR[status];
+  return color === "default" ? "inherit" : color;
+}
+
 function monthLabel(month: string) {
   const [y, m] = month.split("-");
   return new Date(Number(y), Number(m) - 1).toLocaleString("default", { month: "long", year: "numeric" });
@@ -57,7 +63,7 @@ export function BudgetPage() {
 
   return (
     <Box>
-      <Stack direction="row" alignItems="center" gap={2} mb={4} flexWrap="wrap">
+      <Stack direction="row" sx={{ alignItems: "center", gap: 2, mb: 4, flexWrap: "wrap" }}>
         <TextField
           type="month"
           label="Month"
@@ -80,7 +86,7 @@ export function BudgetPage() {
           <Grid size={{ xs: 12, md: 7 }}>
             <Card>
               <CardContent sx={{ p: 3 }}>
-                <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
+                <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "center", mb: 3 }}>
                   <Typography variant="h3">{monthLabel(month)}</Typography>
                   <Chip
                     label={STATUS_LABEL[summary.status]}
@@ -90,8 +96,8 @@ export function BudgetPage() {
                 </Stack>
 
                 {summary.status !== "none" && summary.percentUsed != null ? (
-                  <Box mb={3}>
-                    <Stack direction="row" justifyContent="space-between" mb={1}>
+                  <Box sx={{ mb: 3 }}>
+                    <Stack direction="row" sx={{ justifyContent: "space-between", mb: 1 }}>
                       <Typography variant="body2" color="text.secondary">
                         ${summary.spent.toFixed(2)} spent
                       </Typography>
@@ -102,10 +108,10 @@ export function BudgetPage() {
                     <LinearProgress
                       variant="determinate"
                       value={Math.min(summary.percentUsed, 100)}
-                      color={STATUS_COLOR[summary.status] === "default" ? "inherit" : STATUS_COLOR[summary.status]}
+                      color={progressColor(summary.status)}
                       sx={{ height: 10, borderRadius: 5 }}
                     />
-                    <Stack direction="row" justifyContent="space-between" mt={0.75}>
+                    <Stack direction="row" sx={{ justifyContent: "space-between", mt: 0.75 }}>
                       <Typography variant="caption" color="text.disabled">$0</Typography>
                       <Typography variant="caption" color="text.disabled">
                         ${summary.amount?.toFixed(2)}
@@ -146,10 +152,10 @@ export function BudgetPage() {
           <Grid size={{ xs: 12, md: 5 }}>
             <Card>
               <CardContent sx={{ p: 3 }}>
-                <Typography variant="h3" mb={0.5}>
+                <Typography variant="h3" sx={{ mb: 0.5 }}>
                   {summary.amount != null ? "Update budget" : "Set a budget"}
                 </Typography>
-                <Typography variant="body2" color="text.secondary" mb={3}>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
                   {summary.amount != null
                     ? `Current budget for ${monthLabel(month)} is $${summary.amount.toFixed(2)}.`
                     : `Set a spending limit for ${monthLabel(month)}.`}
@@ -188,9 +194,9 @@ export function BudgetPage() {
 
 function BudgetRow({ label, value, valueColor }: { label: string; value: string; valueColor?: string }) {
   return (
-    <Stack direction="row" justifyContent="space-between" alignItems="center">
+    <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "center" }}>
       <Typography variant="body2" color="text.secondary">{label}</Typography>
-      <Typography variant="body2" fontWeight={600} color={valueColor ?? "text.primary"}>{value}</Typography>
+      <Typography variant="body2" color={valueColor ?? "text.primary"} sx={{ fontWeight: 600 }}>{value}</Typography>
     </Stack>
   );
 }
