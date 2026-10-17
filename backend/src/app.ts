@@ -1,6 +1,5 @@
 import cors from "cors";
 import express from "express";
-import { env } from "./config/env";
 import { errorHandler, notFound } from "./middleware/errorHandler";
 import { adminRouter } from "./routes/admin";
 import { authRouter } from "./routes/auth";
