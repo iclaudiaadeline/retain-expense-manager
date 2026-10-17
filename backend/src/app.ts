@@ -11,7 +11,7 @@ import { expensesRouter } from "./routes/expenses";
 
 export const app = express();
 
-app.use(cors({ origin: env.CLIENT_URL }));
+app.use(cors({ origin: true }));
 app.use(express.json());
 
 app.get("/api/health", (_req, res) => {
