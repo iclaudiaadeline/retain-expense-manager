@@ -11,9 +11,10 @@ import ReceiptLongOutlinedIcon from "@mui/icons-material/ReceiptLongOutlined";
 import SavingsOutlinedIcon from "@mui/icons-material/SavingsOutlined";
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
 import CategoryOutlinedIcon from "@mui/icons-material/CategoryOutlined";
+import LogoutIcon from "@mui/icons-material/Logout";
 import { useAuth } from "../../hooks/useAuth";
 
-const DRAWER_WIDTH = 248;
+const DRAWER_WIDTH = 256;
 
 const userNav = [
   { label: "Dashboard", path: "/dashboard", icon: <DashboardOutlinedIcon fontSize="small" /> },
@@ -26,6 +27,14 @@ const adminNav = [
   { label: "Categories", path: "/admin/categories", icon: <CategoryOutlinedIcon fontSize="small" /> },
 ];
 
+const PAGE_TITLES: Record<string, string> = {
+  "/dashboard":        "Dashboard",
+  "/expenses":         "Expenses",
+  "/budget":           "Budget",
+  "/admin":            "Insights",
+  "/admin/categories": "Categories",
+};
+
 export function AppLayout() {
   const { user, isAdmin, logout } = useAuth();
   const location = useLocation();
@@ -33,135 +42,149 @@ export function AppLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  function handleLogout() {
-    logout();
-    navigate("/login");
-  }
+  function handleLogout() { logout(); navigate("/login"); }
+  const close = () => setMobileOpen(false);
 
-  function NavItems({ onNavigate }: { onNavigate?: () => void }) {
+  function NavItem({
+    label, path, icon, activeColor = "#0f766e", activeDark = "#0d6460",
+  }: {
+    label: string; path: string; icon: React.ReactNode;
+    activeColor?: string; activeDark?: string;
+  }) {
+    const selected = location.pathname === path;
     return (
-      <>
-        <List sx={{ px: 1.5 }}>
-          {userNav.map(({ label, path, icon }) => (
-            <ListItem key={path} disablePadding sx={{ mb: 0.5 }}>
-              <ListItemButton
-                component={RouterLink}
-                to={path}
-                selected={location.pathname === path}
-                onClick={onNavigate}
-                sx={{
-                  borderRadius: 2,
-                  py: 1,
-                  "&.Mui-selected": {
-                    bgcolor: "primary.main",
-                    color: "white",
-                    "& .MuiListItemIcon-root": { color: "white" },
-                    "&:hover": { bgcolor: "primary.dark" },
-                  },
-                }}
-              >
-                <ListItemIcon sx={{ minWidth: 36 }}>{icon}</ListItemIcon>
-                <ListItemText
-                  primary={label}
-                  slotProps={{ primary: { fontSize: "0.9rem", fontWeight: location.pathname === path ? 600 : 400 } }}
-                />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-
-        {isAdmin && (
-          <>
-            <Divider sx={{ mx: 2, my: 1 }} />
-            <Typography
-              variant="caption"
-              sx={{ px: 3, mb: 0.5, display: "block", color: "text.disabled", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase" }}
-            >
-              Admin
-            </Typography>
-            <List sx={{ px: 1.5 }}>
-              {adminNav.map(({ label, path, icon }) => (
-                <ListItem key={path} disablePadding sx={{ mb: 0.5 }}>
-                  <ListItemButton
-                    component={RouterLink}
-                    to={path}
-                    selected={location.pathname === path}
-                    onClick={onNavigate}
-                    sx={{
-                      borderRadius: 2,
-                      py: 1,
-                      "&.Mui-selected": {
-                        bgcolor: "secondary.main",
-                        color: "white",
-                        "& .MuiListItemIcon-root": { color: "white" },
-                        "&:hover": { bgcolor: "secondary.dark" },
-                      },
-                    }}
-                  >
-                    <ListItemIcon sx={{ minWidth: 36 }}>{icon}</ListItemIcon>
-                    <ListItemText
-                      primary={label}
-                      slotProps={{ primary: { fontSize: "0.9rem", fontWeight: location.pathname === path ? 600 : 400 } }}
-                    />
-                  </ListItemButton>
-                </ListItem>
-              ))}
-            </List>
-          </>
-        )}
-      </>
+      <ListItem disablePadding sx={{ mb: 0.5 }}>
+        <ListItemButton
+          component={RouterLink}
+          to={path}
+          selected={selected}
+          onClick={close}
+          sx={{
+            borderRadius: 2,
+            py: 1,
+            px: 1.5,
+            "&.Mui-selected": {
+              bgcolor: activeColor,
+              color: "white",
+              "& .MuiListItemIcon-root": { color: "white" },
+              "&:hover": { bgcolor: activeDark },
+            },
+            "&:not(.Mui-selected):hover": { bgcolor: "rgba(0,0,0,0.04)" },
+          }}
+        >
+          <ListItemIcon sx={{ minWidth: 34, color: selected ? "inherit" : "text.secondary" }}>
+            {icon}
+          </ListItemIcon>
+          <ListItemText
+            primary={label}
+            slotProps={{ primary: { fontSize: "0.875rem", fontWeight: selected ? 600 : 400 } }}
+          />
+        </ListItemButton>
+      </ListItem>
     );
   }
 
-  const sidebarContent = (
-    <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+  const sidebar = (
+    <Box sx={{ display: "flex", flexDirection: "column", height: "100%", bgcolor: "background.paper" }}>
+
+      {/* Brand */}
       <Stack direction="row" spacing={1.5} alignItems="center" sx={{ px: 3, py: 2.5 }}>
-        <SavingsOutlinedIcon color="primary" sx={{ fontSize: 26 }} />
+        <SavingsOutlinedIcon sx={{ fontSize: 22, color: "primary.main" }} />
         <Typography
           component={RouterLink}
           to="/dashboard"
-          sx={{ textDecoration: "none", color: "inherit", fontWeight: 700, fontSize: "1.15rem" }}
+          sx={{ textDecoration: "none", color: "text.primary", fontWeight: 700, fontSize: "1.05rem" }}
         >
           Retain
         </Typography>
       </Stack>
+
       <Divider />
-      <Box sx={{ flex: 1, overflowY: "auto", pt: 2 }}>
-        <NavItems onNavigate={() => setMobileOpen(false)} />
+
+      {/* User nav */}
+      <Box sx={{ px: 1.5, pt: 2, pb: 1 }}>
+        <List disablePadding>
+          {userNav.map(({ label, path, icon }) => (
+            <NavItem key={path} label={label} path={path} icon={icon} />
+          ))}
+        </List>
       </Box>
+
+      {/* Admin nav — only shown to admins, clearly separated */}
+      {isAdmin && (
+        <>
+          <Divider sx={{ mx: 2 }} />
+          <Box sx={{ px: 1.5, pt: 2, pb: 1 }}>
+            <Typography
+              variant="caption"
+              sx={{
+                px: 1.5, mb: 1.5, display: "block",
+                color: "text.disabled", fontWeight: 700,
+                letterSpacing: "0.08em", textTransform: "uppercase", fontSize: "0.68rem",
+              }}
+            >
+              Admin
+            </Typography>
+            <List disablePadding>
+              {adminNav.map(({ label, path, icon }) => (
+                <NavItem key={path} label={label} path={path} icon={icon}
+                  activeColor="#4f46e5" activeDark="#4338ca" />
+              ))}
+            </List>
+          </Box>
+        </>
+      )}
+
+      <Box sx={{ flexGrow: 1 }} />
+
+      {/* User strip */}
+      <Divider />
+      <Stack direction="row" spacing={1.5} alignItems="center" sx={{ px: 2.5, py: 2 }}>
+        <Avatar sx={{ width: 32, height: 32, bgcolor: "primary.main", fontSize: "0.8rem", fontWeight: 700, flexShrink: 0 }}>
+          {user?.name?.[0]?.toUpperCase()}
+        </Avatar>
+        <Box sx={{ minWidth: 0, flex: 1 }}>
+          <Typography variant="body2" fontWeight={600} noWrap>{user?.name}</Typography>
+          <Typography variant="caption" color="text.secondary" noWrap display="block">{user?.email}</Typography>
+        </Box>
+        <IconButton size="small" onClick={handleLogout} title="Sign out" sx={{ color: "text.secondary", flexShrink: 0 }}>
+          <LogoutIcon fontSize="small" />
+        </IconButton>
+      </Stack>
     </Box>
   );
 
   return (
     <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "background.default" }}>
+
+      {/* Green top bar — page title on the left, avatar on the right */}
       <AppBar
         position="fixed"
         elevation={0}
         sx={{
           zIndex: (t) => t.zIndex.drawer + 1,
-          bgcolor: "background.paper",
-          color: "text.primary",
-          borderBottom: "1px solid",
-          borderColor: "divider",
           width: { sm: `calc(100% - ${DRAWER_WIDTH}px)` },
           ml: { sm: `${DRAWER_WIDTH}px` },
         }}
       >
-        <Toolbar sx={{ minHeight: "64px !important", px: { xs: 2, sm: 3 } }}>
-          <IconButton edge="start" sx={{ mr: 1, display: { sm: "none" } }} onClick={() => setMobileOpen(true)}>
+        <Toolbar sx={{ minHeight: "60px !important", px: { xs: 2, sm: 3 } }}>
+          <IconButton edge="start" sx={{ mr: 1.5, display: { sm: "none" }, color: "white" }}
+            onClick={() => setMobileOpen(true)}>
             <MenuIcon />
           </IconButton>
-          <Box sx={{ flexGrow: 1 }} />
-          <Stack direction="row" spacing={1.5} alignItems="center">
-            <Typography variant="body2" color="text.secondary" sx={{ display: { xs: "none", sm: "block" } }}>
-              {user?.name}
-            </Typography>
-            <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} size="small" sx={{ p: 0 }}>
-              <Avatar sx={{ width: 36, height: 36, bgcolor: "primary.main", fontSize: "0.9rem", fontWeight: 700 }}>
-                {user?.name?.[0]?.toUpperCase()}
-              </Avatar>
-            </IconButton>
-          </Stack>
+
+          {/* Page title — left aligned */}
+          <Typography variant="h3" sx={{ flexGrow: 1, color: "white", fontWeight: 600, fontSize: "1rem" }}>
+            {PAGE_TITLES[location.pathname] ?? "Retain"}
+          </Typography>
+
+          {/* Avatar */}
+          <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} size="small" sx={{ p: 0 }}>
+            <Avatar sx={{ width: 34, height: 34, bgcolor: "rgba(255,255,255,0.2)", fontSize: "0.85rem", fontWeight: 700, color: "white", border: "2px solid rgba(255,255,255,0.4)" }}>
+              {user?.name?.[0]?.toUpperCase()}
+            </Avatar>
+          </IconButton>
+
           <Menu
             anchorEl={anchorEl}
             open={Boolean(anchorEl)}
@@ -175,46 +198,39 @@ export function AppLayout() {
               <Typography variant="caption" color="text.secondary">{user?.email}</Typography>
             </Box>
             <Divider />
-            <MenuItem onClick={handleLogout} sx={{ color: "error.main", py: 1.25 }}>
-              Sign out
+            <MenuItem onClick={handleLogout} sx={{ color: "error.main", gap: 1.5, py: 1.25 }}>
+              <LogoutIcon fontSize="small" /> Sign out
             </MenuItem>
           </Menu>
         </Toolbar>
       </AppBar>
 
-      <Drawer
-        variant="temporary"
-        open={mobileOpen}
-        onClose={() => setMobileOpen(false)}
+      {/* Mobile drawer */}
+      <Drawer variant="temporary" open={mobileOpen} onClose={close}
         ModalProps={{ keepMounted: true }}
-        sx={{ display: { xs: "block", sm: "none" }, "& .MuiDrawer-paper": { width: DRAWER_WIDTH } }}
-      >
-        {sidebarContent}
+        sx={{ display: { xs: "block", sm: "none" }, "& .MuiDrawer-paper": { width: DRAWER_WIDTH } }}>
+        {sidebar}
       </Drawer>
 
-      <Drawer
-        variant="permanent"
+      {/* Desktop drawer */}
+      <Drawer variant="permanent"
         sx={{
           display: { xs: "none", sm: "block" },
-          width: DRAWER_WIDTH,
-          flexShrink: 0,
+          width: DRAWER_WIDTH, flexShrink: 0,
           "& .MuiDrawer-paper": { width: DRAWER_WIDTH, boxSizing: "border-box", borderRight: "1px solid #e5e7eb" },
-        }}
-      >
-        {sidebarContent}
+        }}>
+        {sidebar}
       </Drawer>
 
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          mt: "64px",
-          p: { xs: 2, sm: 4 },
-          minHeight: "calc(100vh - 64px)",
-          maxWidth: "100%",
-          overflow: "auto",
-        }}
-      >
+      {/* Page content */}
+      <Box component="main" sx={{
+        flexGrow: 1,
+        mt: "60px",
+        p: { xs: 2.5, sm: 4 },
+        minHeight: "calc(100vh - 60px)",
+        maxWidth: "100%",
+        overflow: "auto",
+      }}>
         <Outlet />
       </Box>
     </Box>
