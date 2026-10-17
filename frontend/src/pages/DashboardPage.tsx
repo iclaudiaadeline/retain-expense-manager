@@ -19,6 +19,12 @@ const STATUS_LABEL: Record<string, string> = {
   within: "Within budget", approaching: "Approaching limit", over: "Over budget", none: "",
 };
 
+// Chip has no "inherit" color, so fall back to "default"
+function chipColor(status: string) {
+  const color = STATUS_COLOR[status];
+  return color === "inherit" ? "default" : color;
+}
+
 export function DashboardPage() {
   const { user } = useAuth();
   const currentMonth = new Date().toISOString().slice(0, 7);
@@ -38,7 +44,7 @@ export function DashboardPage() {
 
   return (
     <Box>
-      <Stack direction="row" alignItems="center" gap={2} mb={4} flexWrap="wrap">
+      <Stack direction="row" sx={{ alignItems: "center", gap: 2, mb: 4, flexWrap: "wrap" }}>
         <TextField
           type="month"
           label="Month"
@@ -108,12 +114,12 @@ export function DashboardPage() {
           {data.budget.status !== "none" && data.budget.percentUsed != null && (
             <Card>
               <CardContent>
-                <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1.5}>
-                  <Typography fontWeight={600}>Budget usage</Typography>
+                <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "center", mb: 1.5 }}>
+                  <Typography sx={{ fontWeight: 600 }}>Budget usage</Typography>
                   <Chip
                     label={STATUS_LABEL[data.budget.status]}
                     size="small"
-                    color={STATUS_COLOR[data.budget.status]}
+                    color={chipColor(data.budget.status)}
                   />
                 </Stack>
                 <LinearProgress
@@ -122,7 +128,7 @@ export function DashboardPage() {
                   color={STATUS_COLOR[data.budget.status]}
                   sx={{ height: 10, borderRadius: 5 }}
                 />
-                <Stack direction="row" justifyContent="space-between" mt={1}>
+                <Stack direction="row" sx={{ justifyContent: "space-between", mt: 1 }}>
                   <Typography variant="caption" color="text.secondary">
                     ${data.totalSpent.toFixed(2)} spent
                   </Typography>
@@ -134,11 +140,11 @@ export function DashboardPage() {
             </Card>
           )}
 
-          <Grid container spacing={2.5} alignItems="stretch">
+          <Grid container spacing={2.5} sx={{ alignItems: "stretch" }}>
             <Grid size={{ xs: 12, md: 6 }}>
               <Card sx={{ height: "100%" }}>
                 <CardContent>
-                  <Typography variant="h3" mb={2}>Spending by category</Typography>
+                  <Typography variant="h3" sx={{ mb: 2 }}>Spending by category</Typography>
                   {data.spendingByCategory.length === 0 ? (
                     <Typography color="text.secondary" variant="body2">
                       No spending recorded this month.
@@ -149,13 +155,13 @@ export function DashboardPage() {
                         const pct = data.totalSpent > 0 ? (c.total / data.totalSpent) * 100 : 0;
                         return (
                           <Box key={c.categoryId}>
-                            <Stack direction="row" justifyContent="space-between" mb={0.75}>
+                            <Stack direction="row" sx={{ justifyContent: "space-between", mb: 0.75 }}>
                               <Typography variant="body2">{c.name}</Typography>
-                              <Stack direction="row" spacing={1} alignItems="center">
+                              <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                                 <Typography variant="caption" color="text.secondary">
                                   {pct.toFixed(0)}%
                                 </Typography>
-                                <Typography variant="body2" fontWeight={600}>
+                                <Typography variant="body2" sx={{ fontWeight: 600 }}>
                                   ${c.total.toFixed(2)}
                                 </Typography>
                               </Stack>
@@ -177,7 +183,7 @@ export function DashboardPage() {
             <Grid size={{ xs: 12, md: 6 }}>
               <Card sx={{ height: "100%" }}>
                 <CardContent>
-                  <Typography variant="h3" mb={2}>Recent expenses</Typography>
+                  <Typography variant="h3" sx={{ mb: 2 }}>Recent expenses</Typography>
                   {data.recentExpenses.length === 0 ? (
                     <Typography color="text.secondary" variant="body2">
                       No expenses recorded this month.
@@ -185,18 +191,12 @@ export function DashboardPage() {
                   ) : (
                     <Stack divider={<Divider />} spacing={0}>
                       {data.recentExpenses.map((exp) => (
-                        <Stack
-                          key={exp.id}
-                          direction="row"
-                          justifyContent="space-between"
-                          alignItems="center"
-                          sx={{ py: 1.25 }}
-                        >
+                        <Stack key={exp.id} direction="row" sx={{ justifyContent: "space-between", alignItems: "center", py: 1.25 }}>
                           <Box sx={{ minWidth: 0, flex: 1, mr: 2 }}>
-                            <Typography variant="body2" fontWeight={500} noWrap>
+                            <Typography variant="body2" noWrap sx={{ fontWeight: 500 }}>
                               {exp.title}
                             </Typography>
-                            <Stack direction="row" spacing={0.75} alignItems="center" mt={0.25}>
+                            <Stack direction="row" spacing={0.75} sx={{ alignItems: "center", mt: 0.25 }}>
                               <Typography variant="caption" color="text.secondary">
                                 {exp.date}
                               </Typography>
@@ -208,7 +208,7 @@ export function DashboardPage() {
                               />
                             </Stack>
                           </Box>
-                          <Typography variant="body2" fontWeight={600} whiteSpace="nowrap">
+                          <Typography variant="body2" sx={{ fontWeight: 600, whiteSpace: "nowrap" }}>
                             ${exp.amount.toFixed(2)}
                           </Typography>
                         </Stack>
@@ -237,7 +237,7 @@ function StatCard({ icon, iconBg, iconColor, label, value, sub, subColor }: {
   return (
     <Card sx={{ height: "100%" }}>
       <CardContent>
-        <Stack direction="row" spacing={2} alignItems="flex-start">
+        <Stack direction="row" spacing={2} sx={{ alignItems: "flex-start" }}>
           <Box sx={{
             p: 1.25, borderRadius: 2, bgcolor: iconBg, color: iconColor,
             display: "flex", flexShrink: 0,
@@ -245,10 +245,10 @@ function StatCard({ icon, iconBg, iconColor, label, value, sub, subColor }: {
             {icon}
           </Box>
           <Box sx={{ minWidth: 0 }}>
-            <Typography variant="caption" color="text.secondary" display="block">
+            <Typography variant="caption" color="text.secondary" sx={{ display: "block" }}>
               {label}
             </Typography>
-            <Typography fontWeight={700} fontSize="1.35rem" lineHeight={1.3} mt={0.25}>
+            <Typography sx={{ fontWeight: 700, fontSize: "1.35rem", lineHeight: 1.3, mt: 0.25 }}>
               {value}
             </Typography>
             {sub && (
