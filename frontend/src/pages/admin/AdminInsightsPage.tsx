@@ -29,9 +29,9 @@ export function AdminInsightsPage() {
 
   return (
     <Box>
-      <Typography variant="h2" mb={4}>Platform Insights</Typography>
+      <Typography variant="h2" sx={{ mb: 4 }}>Platform Insights</Typography>
 
-      <Grid container spacing={2.5} mb={4}>
+      <Grid container spacing={2.5} sx={{ mb: 4 }}>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <StatCard icon={<PeopleOutlinedIcon />} iconBg="#e3f2fd" iconColor="#1565c0"
             label="Total users" value={data.totalUsers} />
@@ -50,14 +50,14 @@ export function AdminInsightsPage() {
         </Grid>
       </Grid>
 
-      <Grid container spacing={2.5} mb={4}>
+      <Grid container spacing={2.5} sx={{ mb: 4 }}>
         <Grid size={{ xs: 12, md: 4 }}>
           <Card sx={{ height: "100%" }}>
             <CardContent>
-              <Typography variant="h3" mb={2.5}>Spending per category</Typography>
+              <Typography variant="h3" sx={{ mb: 2.5 }}>Spending per category</Typography>
               <Stack spacing={2}>
                 {data.spendingPerCategory.map((c) => (
-                  <Stack key={c.categoryId} direction="row" justifyContent="space-between" alignItems="center">
+                  <Stack key={c.categoryId} direction="row" sx={{ justifyContent: "space-between", alignItems: "center" }}>
                     <Typography variant="body2">{c.name}</Typography>
                     <Typography variant="body2" sx={{ fontWeight: 600 }}>${c.total.toFixed(2)}</Typography>
                   </Stack>
@@ -70,10 +70,10 @@ export function AdminInsightsPage() {
         <Grid size={{ xs: 12, sm: 6, md: 4 }}>
           <Card sx={{ height: "100%" }}>
             <CardContent>
-              <Typography variant="h3" mb={2.5}>Top 5 categories</Typography>
+              <Typography variant="h3" sx={{ mb: 2.5 }}>Top 5 categories</Typography>
               <Stack spacing={2}>
                 {data.topCategories.map((c, i) => (
-                  <Stack key={c.categoryId} direction="row" alignItems="center">
+                  <Stack key={c.categoryId} direction="row" sx={{ alignItems: "center" }}>
                     <Typography variant="caption" color="text.disabled" sx={{ minWidth: 24 }}>
                       #{i + 1}
                     </Typography>
@@ -89,10 +89,10 @@ export function AdminInsightsPage() {
         <Grid size={{ xs: 12, sm: 6, md: 4 }}>
           <Card sx={{ height: "100%" }}>
             <CardContent>
-              <Typography variant="h3" mb={2.5}>Bottom 5 categories</Typography>
+              <Typography variant="h3" sx={{ mb: 2.5 }}>Bottom 5 categories</Typography>
               <Stack spacing={2}>
                 {data.bottomCategories.map((c, i) => (
-                  <Stack key={c.categoryId} direction="row" alignItems="center">
+                  <Stack key={c.categoryId} direction="row" sx={{ alignItems: "center" }}>
                     <Typography variant="caption" color="text.disabled" sx={{ minWidth: 24 }}>
                       #{i + 1}
                     </Typography>
@@ -110,7 +110,7 @@ export function AdminInsightsPage() {
         <Grid size={{ xs: 12, md: 7 }}>
           <Card>
             <CardContent>
-              <Typography variant="h3" mb={2.5}>Recent expenses</Typography>
+              <Typography variant="h3" sx={{ mb: 2.5 }}>Recent expenses</Typography>
               <TableContainer>
                 <Table>
                   <TableHead>
@@ -146,13 +146,12 @@ export function AdminInsightsPage() {
         <Grid size={{ xs: 12, md: 5 }}>
           <Card>
             <CardContent>
-              <Typography variant="h3" mb={2.5}>Recent users</Typography>
+              <Typography variant="h3" sx={{ mb: 2.5 }}>Recent users</Typography>
               <Stack divider={<Divider />} spacing={0}>
                 {data.recentUsers.map((u) => (
-                  <Stack key={u.id} direction="row" justifyContent="space-between"
-                    alignItems="center" sx={{ py: 1.5 }}>
+                  <Stack key={u.id} direction="row" sx={{ justifyContent: "space-between", alignItems: "center", py: 1.5 }}>
                     <Box>
-                      <Typography variant="body2" fontWeight={500}>{u.name}</Typography>
+                      <Typography variant="body2" sx={{ fontWeight: 500 }}>{u.name}</Typography>
                       <Typography variant="caption" color="text.secondary">{u.email}</Typography>
                     </Box>
                     <Chip
