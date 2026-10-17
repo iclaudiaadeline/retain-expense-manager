@@ -21,7 +21,7 @@ export function ExpenseFilters() {
   }
 
   return (
-    <Grid container spacing={1.5} alignItems="center">
+    <Grid container spacing={1.5} sx={{ alignItems: "center" }}>
       <Grid size={{ xs: 12, sm: 6, md: 4 }}>
         <TextField fullWidth size="small" placeholder="Search title or notes"
           value={filters.search}
