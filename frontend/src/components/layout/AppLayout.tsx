@@ -77,7 +77,7 @@ export function AppLayout() {
           </ListItemIcon>
           <ListItemText
             primary={label}
-            slotProps={{ primary: { fontSize: "0.875rem", fontWeight: selected ? 600 : 400 } }}
+            slotProps={{ primary: { sx: { fontSize: "0.875rem", fontWeight: selected ? 600 : 400 } } }}
           />
         </ListItemButton>
       </ListItem>
@@ -88,7 +88,7 @@ export function AppLayout() {
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%", bgcolor: "background.paper" }}>
 
       {/* Brand */}
-      <Stack direction="row" spacing={1.5} alignItems="center" sx={{ px: 3, py: 2.5 }}>
+      <Stack direction="row" spacing={1.5} sx={{ alignItems: "center", px: 3, py: 2.5 }}>
         <SavingsOutlinedIcon sx={{ fontSize: 22, color: "primary.main" }} />
         <Typography
           component={RouterLink}
@@ -139,13 +139,13 @@ export function AppLayout() {
 
       {/* User strip */}
       <Divider />
-      <Stack direction="row" spacing={1.5} alignItems="center" sx={{ px: 2.5, py: 2 }}>
+      <Stack direction="row" spacing={1.5} sx={{ alignItems: "center", px: 2.5, py: 2 }}>
         <Avatar sx={{ width: 32, height: 32, bgcolor: "primary.main", fontSize: "0.8rem", fontWeight: 700, flexShrink: 0 }}>
           {user?.name?.[0]?.toUpperCase()}
         </Avatar>
         <Box sx={{ minWidth: 0, flex: 1 }}>
-          <Typography variant="body2" fontWeight={600} noWrap>{user?.name}</Typography>
-          <Typography variant="caption" color="text.secondary" noWrap display="block">{user?.email}</Typography>
+          <Typography variant="body2" noWrap sx={{ fontWeight: 600 }}>{user?.name}</Typography>
+          <Typography variant="caption" color="text.secondary" noWrap sx={{ display: "block" }}>{user?.email}</Typography>
         </Box>
         <IconButton size="small" onClick={handleLogout} title="Sign out" sx={{ color: "text.secondary", flexShrink: 0 }}>
           <LogoutIcon fontSize="small" />
@@ -194,7 +194,7 @@ export function AppLayout() {
             slotProps={{ paper: { sx: { mt: 1, minWidth: 200 } } }}
           >
             <Box sx={{ px: 2, py: 1.5 }}>
-              <Typography variant="body2" fontWeight={600}>{user?.name}</Typography>
+              <Typography variant="body2" sx={{ fontWeight: 600 }}>{user?.name}</Typography>
               <Typography variant="caption" color="text.secondary">{user?.email}</Typography>
             </Box>
             <Divider />
