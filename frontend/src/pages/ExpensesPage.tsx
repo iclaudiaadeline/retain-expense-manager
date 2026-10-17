@@ -73,22 +73,16 @@ export function ExpensesPage() {
 
   return (
     <Box>
-      <Stack
-        direction={{ xs: "column", sm: "row" }}
-        justifyContent="space-between"
-        alignItems={{ xs: "flex-start", sm: "center" }}
-        gap={2}
-        mb={4}
-      >
+      <Stack direction={{ xs: "column", sm: "row" }} sx={{ justifyContent: "space-between", alignItems: { xs: "flex-start", sm: "center" }, gap: 2, mb: 4 }}>
         <Box>
           <Typography variant="h2">Expenses</Typography>
           {data && (
-            <Typography variant="body2" color="text.secondary" mt={0.5}>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
               {data.pagination.total} record{data.pagination.total !== 1 ? "s" : ""}
             </Typography>
           )}
         </Box>
-        <Stack direction="row" spacing={1}>
+        <Stack direction="row" sx={{ gap: 1.5 }}>
           <Button
             variant="outlined"
             startIcon={<FilterListIcon />}
@@ -105,7 +99,7 @@ export function ExpensesPage() {
 
       <Collapse in={filtersOpen}>
         <Paper variant="outlined" sx={{ p: 2.5, mb: 2.5, borderRadius: 2 }}>
-          <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
+          <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "center", mb: 2 }}>
             <Typography variant="subtitle2">Filter & sort</Typography>
             <Button size="small" onClick={() => dispatch(resetFilters())}>Reset</Button>
           </Stack>
@@ -146,9 +140,9 @@ export function ExpensesPage() {
                   data?.data.map((exp) => (
                     <TableRow key={exp.id} hover>
                       <TableCell sx={{ maxWidth: 220 }}>
-                        <Typography variant="body2" fontWeight={500} noWrap>{exp.title}</Typography>
+                        <Typography variant="body2" noWrap sx={{ fontWeight: 500 }}>{exp.title}</Typography>
                         {exp.notes && (
-                          <Typography variant="caption" color="text.secondary" noWrap display="block">
+                          <Typography variant="caption" color="text.secondary" noWrap sx={{ display: "block" }}>
                             {exp.notes}
                           </Typography>
                         )}
@@ -165,7 +159,7 @@ export function ExpensesPage() {
                         </Typography>
                       </TableCell>
                       <TableCell align="right">
-                        <Typography variant="body2" fontWeight={600}>
+                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
                           ${exp.amount.toFixed(2)}
                         </Typography>
                       </TableCell>
@@ -187,12 +181,7 @@ export function ExpensesPage() {
           {data && data.pagination.totalPages > 1 && (
             <>
               <Divider />
-              <Stack
-                direction="row"
-                justifyContent="space-between"
-                alignItems="center"
-                sx={{ px: 2, py: 1.5 }}
-              >
+              <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "center", px: 2, py: 1.5 }}>
                 <Typography variant="caption" color="text.secondary">
                   Page {data.pagination.page} of {data.pagination.totalPages}
                 </Typography>
