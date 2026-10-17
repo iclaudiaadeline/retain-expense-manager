@@ -57,21 +57,14 @@ export function BudgetPage() {
 
   return (
     <Box>
-      <Stack
-        direction={{ xs: "column", sm: "row" }}
-        justifyContent="space-between"
-        alignItems={{ xs: "flex-start", sm: "center" }}
-        gap={2}
-        mb={3}
-      >
-        <Typography variant="h2">Budget</Typography>
+      <Stack direction="row" alignItems="center" gap={2} mb={4} flexWrap="wrap">
         <TextField
           type="month"
           label="Month"
           value={month}
           onChange={(e) => setMonth(e.target.value)}
           size="small"
-          sx={{ minWidth: 180 }}
+          sx={{ minWidth: 160 }}
           slotProps={{ inputLabel: { shrink: true } }}
         />
       </Stack>
@@ -83,7 +76,7 @@ export function BudgetPage() {
       ) : error ? (
         <Alert severity="error">{error}</Alert>
       ) : summary ? (
-        <Grid container spacing={3}>
+        <Grid container spacing={3.5}>
           <Grid size={{ xs: 12, md: 7 }}>
             <Card>
               <CardContent sx={{ p: 3 }}>
