@@ -59,7 +59,7 @@ export function AdminInsightsPage() {
                 {data.spendingPerCategory.map((c) => (
                   <Stack key={c.categoryId} direction="row" justifyContent="space-between" alignItems="center">
                     <Typography variant="body2">{c.name}</Typography>
-                    <Typography variant="body2" fontWeight={600}>${c.total.toFixed(2)}</Typography>
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>${c.total.toFixed(2)}</Typography>
                   </Stack>
                 ))}
               </Stack>
@@ -181,13 +181,13 @@ function StatCard({ icon, iconBg, iconColor, label, value }: {
   return (
     <Card>
       <CardContent>
-        <Stack direction="row" spacing={2} alignItems="center" mb={1.5}>
+        <Stack direction="row" spacing={2} sx={{ alignItems: "center", mb: 1.5 }}>
           <Box sx={{ p: 1.25, borderRadius: 2, bgcolor: iconBg, color: iconColor, display: "flex" }}>
             {icon}
           </Box>
           <Typography variant="body2" color="text.secondary">{label}</Typography>
         </Stack>
-        <Typography fontWeight={700} fontSize="1.5rem">{value}</Typography>
+        <Typography sx={{ fontWeight: 700, fontSize: "1.5rem" }}>{value}</Typography>
       </CardContent>
     </Card>
   );
