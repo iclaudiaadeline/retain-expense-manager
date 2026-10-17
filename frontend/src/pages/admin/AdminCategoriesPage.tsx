@@ -75,11 +75,10 @@ export function AdminCategoriesPage() {
   return (
     <Box>
       {/* Page header */}
-      <Stack direction={{ xs: "column", sm: "row" }} justifyContent="space-between"
-        alignItems={{ xs: "flex-start", sm: "center" }} gap={2} mb={4}>
+      <Stack direction={{ xs: "column", sm: "row" }} sx={{ justifyContent: "space-between", alignItems: { xs: "flex-start", sm: "center" }, gap: 2, mb: 4 }}>
         <Box>
           <Typography variant="h2">Categories</Typography>
-          <Typography variant="body2" color="text.secondary" mt={0.5}>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
             {categories.length} {categories.length === 1 ? "category" : "categories"} on the platform
           </Typography>
         </Box>
@@ -95,19 +94,13 @@ export function AdminCategoriesPage() {
           <CircularProgress />
         </Box>
       ) : (
-        <Box maxWidth={640}>
+        <Box sx={{ maxWidth: 640 }}>
           <Card>
             <Stack divider={<Divider />} spacing={0}>
               {categories.map((cat) => (
-                <Stack
-                  key={cat.id}
-                  direction="row"
-                  justifyContent="space-between"
-                  alignItems="center"
-                  sx={{ px: 3, py: 2.5 }}
-                >
-                  <Stack direction="row" spacing={1.5} alignItems="center">
-                    <Typography variant="body2" fontWeight={500}>{cat.name}</Typography>
+                <Stack key={cat.id} direction="row" sx={{ justifyContent: "space-between", alignItems: "center", px: 3, py: 2.5 }}>
+                  <Stack direction="row" spacing={1.5} sx={{ alignItems: "center" }}>
+                    <Typography variant="body2" sx={{ fontWeight: 500 }}>{cat.name}</Typography>
                     {cat.isDefault && (
                       <Chip label="default" size="small" color="primary" variant="outlined" />
                     )}
