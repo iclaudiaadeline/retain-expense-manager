@@ -1,10 +1,10 @@
-import { Button, Grid, InputAdornment, MenuItem, TextField } from "@mui/material";
+import { Grid, InputAdornment, MenuItem, TextField } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { useEffect, useState } from "react";
 import { api } from "../../api/client";
 import type { Category } from "../../types/api";
 import { PAYMENT_METHODS } from "../../types/api";
-import { resetFilters, setFilter } from "../../store/filtersSlice";
+import { setFilter } from "../../store/filtersSlice";
 import { useAppDispatch, useAppSelector } from "../../store/store";
 
 export function ExpenseFilters() {
@@ -63,23 +63,6 @@ export function ExpenseFilters() {
       <Grid size={{ xs: 6, sm: 3, md: 2 }}>
         <TextField fullWidth size="small" label="Max $" type="number" value={filters.maxAmount}
           onChange={(e) => set("maxAmount", e.target.value)} />
-      </Grid>
-      <Grid size={{ xs: 6, sm: 3, md: 2 }}>
-        <TextField select fullWidth size="small" label="Sort by" value={filters.sortBy}
-          onChange={(e) => set("sortBy", e.target.value as typeof filters.sortBy)}>
-          <MenuItem value="date">Date</MenuItem>
-          <MenuItem value="amount">Amount</MenuItem>
-        </TextField>
-      </Grid>
-      <Grid size={{ xs: 6, sm: 3, md: 2 }}>
-        <TextField select fullWidth size="small" label="Order" value={filters.sortOrder}
-          onChange={(e) => set("sortOrder", e.target.value as typeof filters.sortOrder)}>
-          <MenuItem value="desc">Newest first</MenuItem>
-          <MenuItem value="asc">Oldest first</MenuItem>
-        </TextField>
-      </Grid>
-      <Grid size={{ xs: 12, sm: "auto" }}>
-        <Button size="small" onClick={() => dispatch(resetFilters())}>Reset</Button>
       </Grid>
     </Grid>
   );
