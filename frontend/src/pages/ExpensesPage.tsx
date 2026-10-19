@@ -8,20 +8,15 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlined";
+import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
 import { api, ApiError } from "../api/client";
 import { ExpenseFilters } from "../components/expenses/ExpenseFilters";
+import { ExpenseDetails } from "../components/expenses/ExpenseDetails";
 import { ExpenseForm } from "../components/expenses/ExpenseForm";
 import { useAppDispatch, useAppSelector } from "../store/store";
 import { resetFilters, setFilter, toExpenseQuery } from "../store/filtersSlice";
 import type { Expense, Paginated, SortBy } from "../types/api";
-
-const METHOD_LABELS: Record<string, string> = {
-  cash: "Cash",
-  card: "Card",
-  mobile_money: "Mobile money",
-  bank_transfer: "Bank transfer",
-  other: "Other",
-};
+import { PAYMENT_METHOD_LABELS } from "../types/api";
 
 export function ExpensesPage() {
   const dispatch = useAppDispatch();
@@ -31,6 +26,7 @@ export function ExpensesPage() {
   const [error, setError] = useState<string | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Expense | null>(null);
+  const [viewing, setViewing] = useState<Expense | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Expense | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -61,7 +57,8 @@ export function ExpensesPage() {
   }
 
   function openCreate() { setEditing(null); setFormOpen(true); }
-  function openEdit(exp: Expense) { setEditing(exp); setFormOpen(true); }
+  function openEdit(exp: Expense) { setViewing(null); setEditing(exp); setFormOpen(true); }
+  function openDelete(exp: Expense) { setViewing(null); setDeleteError(null); setDeleteTarget(exp); }
 
   async function handleDelete() {
     if (!deleteTarget) return;
@@ -151,7 +148,7 @@ export function ExpensesPage() {
                   </TableRow>
                 ) : (
                   data?.data.map((exp) => (
-                    <TableRow key={exp.id} hover>
+                    <TableRow key={exp.id} hover onClick={() => setViewing(exp)} sx={{ cursor: "pointer" }}>
                       <TableCell sx={{ maxWidth: 220 }}>
                         <Typography variant="body2" noWrap sx={{ fontWeight: 500 }}>{exp.title}</Typography>
                         {exp.notes && (
@@ -168,7 +165,7 @@ export function ExpensesPage() {
                       </TableCell>
                       <TableCell>
                         <Typography variant="body2">
-                          {METHOD_LABELS[exp.paymentMethod] ?? exp.paymentMethod}
+                          {PAYMENT_METHOD_LABELS[exp.paymentMethod]}
                         </Typography>
                       </TableCell>
                       <TableCell align="right">
@@ -176,11 +173,15 @@ export function ExpensesPage() {
                           ${exp.amount.toFixed(2)}
                         </Typography>
                       </TableCell>
-                      <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>
-                        <IconButton size="small" onClick={() => openEdit(exp)}>
+                      {/* stopPropagation: a click on a button here should not also open the row's details */}
+                      <TableCell align="right" sx={{ whiteSpace: "nowrap" }} onClick={(e) => e.stopPropagation()}>
+                        <IconButton size="small" title="View" onClick={() => setViewing(exp)}>
+                          <VisibilityOutlinedIcon fontSize="small" />
+                        </IconButton>
+                        <IconButton size="small" title="Edit" onClick={() => openEdit(exp)}>
                           <EditOutlinedIcon fontSize="small" />
                         </IconButton>
-                        <IconButton size="small" color="error" onClick={() => { setDeleteError(null); setDeleteTarget(exp); }}>
+                        <IconButton size="small" color="error" title="Delete" onClick={() => openDelete(exp)}>
                           <DeleteOutlineIcon fontSize="small" />
                         </IconButton>
                       </TableCell>
@@ -210,6 +211,8 @@ export function ExpensesPage() {
           )}
         </Paper>
       )}
+
+      <ExpenseDetails expense={viewing} onClose={() => setViewing(null)} onEdit={openEdit} onDelete={openDelete} />
 
       <ExpenseForm open={formOpen} onClose={() => setFormOpen(false)} onSaved={load} expense={editing} />
 

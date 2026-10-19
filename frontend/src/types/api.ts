@@ -48,6 +48,15 @@ export interface Category {
 export const PAYMENT_METHODS = ["cash", "card", "mobile_money", "bank_transfer", "other"] as const;
 export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
 
+/** How each payment method is shown on screen. */
+export const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
+  cash: "Cash",
+  card: "Card",
+  mobile_money: "Mobile money",
+  bank_transfer: "Bank transfer",
+  other: "Other",
+};
+
 export interface Expense {
   id: string;
   title: string;
