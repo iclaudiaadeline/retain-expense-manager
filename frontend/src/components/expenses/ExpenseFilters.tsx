@@ -1,8 +1,7 @@
+import { useEffect, useState } from "react";
 import { Grid, InputAdornment, MenuItem, TextField } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import { useEffect, useState } from "react";
-import { api } from "../../api/client";
-import type { Category } from "../../types/api";
+import { useCategories } from "../../hooks/useCategories";
 import { PAYMENT_METHODS } from "../../types/api";
 import { setFilter } from "../../store/filtersSlice";
 import { useAppDispatch, useAppSelector } from "../../store/store";
@@ -10,22 +9,32 @@ import { useAppDispatch, useAppSelector } from "../../store/store";
 export function ExpenseFilters() {
   const dispatch = useAppDispatch();
   const filters = useAppSelector((s) => s.filters);
-  const [categories, setCategories] = useState<Category[]>([]);
-
-  useEffect(() => {
-    api.get<Category[]>("/categories").then(setCategories).catch(() => {});
-  }, []);
+  const categories = useCategories();
 
   function set<K extends keyof typeof filters>(key: K, value: (typeof filters)[K]) {
     dispatch(setFilter({ key, value }));
   }
 
+  // What is typed in the search box. It reaches Redux, and so the API, only after a short pause,
+  // so typing "lunch" sends one request instead of five.
+  const [searchText, setSearchText] = useState(filters.search);
+
+  // Follow Redux when the search changes from outside, e.g. the Reset button.
+  useEffect(() => { setSearchText(filters.search); }, [filters.search]);
+
+  useEffect(() => {
+    if (searchText === filters.search) return;
+    const timer = setTimeout(() => dispatch(setFilter({ key: "search", value: searchText })), 300);
+    // A new key press before 300 ms cancels the pending search.
+    return () => clearTimeout(timer);
+  }, [searchText, filters.search, dispatch]);
+
   return (
     <Grid container spacing={1.5} sx={{ alignItems: "center" }}>
       <Grid size={{ xs: 12, sm: 6, md: 4 }}>
         <TextField fullWidth size="small" placeholder="Search title or notes"
-          value={filters.search}
-          onChange={(e) => set("search", e.target.value)}
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
           slotProps={{ input: { startAdornment: <InputAdornment position="start"><SearchIcon fontSize="small" /></InputAdornment> } }} />
       </Grid>
       <Grid size={{ xs: 6, sm: 3, md: 2 }}>

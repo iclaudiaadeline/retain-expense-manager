@@ -4,7 +4,8 @@ import {
   MenuItem, Stack, TextField, Alert,
 } from "@mui/material";
 import { api, ApiError } from "../../api/client";
-import type { Category, Expense, ExpenseInput, PaymentMethod } from "../../types/api";
+import { useCategories } from "../../hooks/useCategories";
+import type { Expense, ExpenseInput, PaymentMethod } from "../../types/api";
 import { PAYMENT_METHODS } from "../../types/api";
 
 interface Props {
@@ -18,14 +19,10 @@ const empty: ExpenseInput = { title: "", amount: 0, categoryId: "", date: "", pa
 
 export function ExpenseForm({ open, onClose, onSaved, expense }: Props) {
   const [form, setForm] = useState<ExpenseInput>(empty);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const categories = useCategories();
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
-
-  useEffect(() => {
-    api.get<Category[]>("/categories").then(setCategories).catch(() => {});
-  }, []);
 
   useEffect(() => {
     if (expense) {

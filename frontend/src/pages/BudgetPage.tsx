@@ -5,20 +5,7 @@ import {
 } from "@mui/material";
 import { api, ApiError } from "../api/client";
 import type { BudgetSummary } from "../types/api";
-
-const STATUS_COLOR: Record<string, "success" | "warning" | "error" | "default"> = {
-  within: "success", approaching: "warning", over: "error", none: "default",
-};
-
-const STATUS_LABEL: Record<string, string> = {
-  within: "Within budget", approaching: "Approaching limit", over: "Over budget", none: "No budget set",
-};
-
-// LinearProgress has no "default" color, so fall back to "inherit"
-function progressColor(status: string) {
-  const color = STATUS_COLOR[status];
-  return color === "default" ? "inherit" : color;
-}
+import { BUDGET_STATUS_CHIP_COLOR, BUDGET_STATUS_COLOR, BUDGET_STATUS_LABEL } from "../utils/budgetStatus";
 
 function monthLabel(month: string) {
   const [y, m] = month.split("-");
@@ -89,8 +76,8 @@ export function BudgetPage() {
                 <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "center", mb: 3 }}>
                   <Typography variant="h3">{monthLabel(month)}</Typography>
                   <Chip
-                    label={STATUS_LABEL[summary.status]}
-                    color={STATUS_COLOR[summary.status]}
+                    label={BUDGET_STATUS_LABEL[summary.status]}
+                    color={BUDGET_STATUS_CHIP_COLOR[summary.status]}
                     size="small"
                   />
                 </Stack>
@@ -108,7 +95,7 @@ export function BudgetPage() {
                     <LinearProgress
                       variant="determinate"
                       value={Math.min(summary.percentUsed, 100)}
-                      color={progressColor(summary.status)}
+                      color={BUDGET_STATUS_COLOR[summary.status]}
                       // Grey track, so only the spent part is coloured and 0% looks empty
                       sx={{ height: 10, borderRadius: 5, bgcolor: "divider" }}
                     />

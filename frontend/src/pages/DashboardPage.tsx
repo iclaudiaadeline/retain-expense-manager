@@ -4,22 +4,10 @@ import {
   Divider, Grid, LinearProgress, Stack, TextField, Typography,
 } from "@mui/material";
 import { api } from "../api/client";
+import { StatCard } from "../components/StatCard";
 import type { Dashboard } from "../types/api";
 import { useAuth } from "../hooks/useAuth";
-
-const STATUS_COLOR: Record<string, "success" | "warning" | "error" | "inherit"> = {
-  within: "success", approaching: "warning", over: "error", none: "inherit",
-};
-
-const STATUS_LABEL: Record<string, string> = {
-  within: "Within budget", approaching: "Approaching limit", over: "Over budget", none: "",
-};
-
-// Chip has no "inherit" color, so fall back to "default"
-function chipColor(status: string) {
-  const color = STATUS_COLOR[status];
-  return color === "inherit" ? "default" : color;
-}
+import { BUDGET_STATUS_CHIP_COLOR, BUDGET_STATUS_COLOR, BUDGET_STATUS_LABEL } from "../utils/budgetStatus";
 
 export function DashboardPage() {
   const { user } = useAuth();
@@ -75,8 +63,8 @@ export function DashboardPage() {
               <StatCard
                 label="Budget remaining"
                 value={data.budget.remaining != null ? `$${data.budget.remaining.toFixed(2)}` : "Not set"}
-                sub={data.budget.status !== "none" ? STATUS_LABEL[data.budget.status] : "No budget set for this month"}
-                subColor={data.budget.status !== "none" ? STATUS_COLOR[data.budget.status] : undefined}
+                sub={data.budget.status !== "none" ? BUDGET_STATUS_LABEL[data.budget.status] : "No budget set for this month"}
+                subColor={data.budget.status !== "none" ? BUDGET_STATUS_COLOR[data.budget.status] : undefined}
               />
             </Grid>
             <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
@@ -101,15 +89,15 @@ export function DashboardPage() {
                 <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "center", mb: 1.5 }}>
                   <Typography sx={{ fontWeight: 600 }}>Budget usage</Typography>
                   <Chip
-                    label={STATUS_LABEL[data.budget.status]}
+                    label={BUDGET_STATUS_LABEL[data.budget.status]}
                     size="small"
-                    color={chipColor(data.budget.status)}
+                    color={BUDGET_STATUS_CHIP_COLOR[data.budget.status]}
                   />
                 </Stack>
                 <LinearProgress
                   variant="determinate"
                   value={Math.min(data.budget.percentUsed, 100)}
-                  color={STATUS_COLOR[data.budget.status]}
+                  color={BUDGET_STATUS_COLOR[data.budget.status]}
                   // Grey track, so only the spent part is coloured and 0% looks empty
                   sx={{ height: 10, borderRadius: 5, bgcolor: "divider" }}
                 />
@@ -207,30 +195,5 @@ export function DashboardPage() {
         </Stack>
       ) : null}
     </Box>
-  );
-}
-
-function StatCard({ label, value, sub, subColor }: {
-  label: string;
-  value: string;
-  sub?: string;
-  subColor?: "success" | "warning" | "error" | "inherit";
-}) {
-  return (
-    <Card sx={{ height: "100%" }}>
-      <CardContent>
-        <Typography variant="caption" color="text.secondary" sx={{ display: "block" }}>
-          {label}
-        </Typography>
-        <Typography sx={{ fontWeight: 700, fontSize: "1.35rem", lineHeight: 1.3, mt: 0.25 }}>
-          {value}
-        </Typography>
-        {sub && (
-          <Typography variant="caption" color={subColor ? `${subColor}.main` : "text.secondary"}>
-            {sub}
-          </Typography>
-        )}
-      </CardContent>
-    </Card>
   );
 }

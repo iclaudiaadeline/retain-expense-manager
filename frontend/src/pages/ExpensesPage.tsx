@@ -17,6 +17,7 @@ import { useAppDispatch, useAppSelector } from "../store/store";
 import { resetFilters, setFilter, toExpenseQuery } from "../store/filtersSlice";
 import type { Expense, Paginated, SortBy } from "../types/api";
 import { PAYMENT_METHOD_LABELS } from "../types/api";
+import { HIDE_ON_PHONE } from "../utils/responsive";
 
 export function ExpensesPage() {
   const dispatch = useAppDispatch();
@@ -114,7 +115,7 @@ export function ExpensesPage() {
               <TableHead>
                 <TableRow sx={{ bgcolor: "grey.50" }}>
                   <TableCell sx={{ fontWeight: 600 }}>Title</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>Category</TableCell>
+                  <TableCell sx={{ fontWeight: 600, ...HIDE_ON_PHONE }}>Category</TableCell>
                   <TableCell sx={{ fontWeight: 600 }} sortDirection={filters.sortBy === "date" ? filters.sortOrder : false}>
                     <TableSortLabel
                       active={filters.sortBy === "date"}
@@ -124,7 +125,7 @@ export function ExpensesPage() {
                       Date
                     </TableSortLabel>
                   </TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>Payment</TableCell>
+                  <TableCell sx={{ fontWeight: 600, ...HIDE_ON_PHONE }}>Payment</TableCell>
                   <TableCell align="right" sx={{ fontWeight: 600 }} sortDirection={filters.sortBy === "amount" ? filters.sortOrder : false}>
                     <TableSortLabel
                       active={filters.sortBy === "amount"}
@@ -157,13 +158,13 @@ export function ExpensesPage() {
                           </Typography>
                         )}
                       </TableCell>
-                      <TableCell>
+                      <TableCell sx={HIDE_ON_PHONE}>
                         <Chip label={exp.category.name} size="small" variant="outlined" />
                       </TableCell>
                       <TableCell>
                         <Typography variant="body2">{exp.date}</Typography>
                       </TableCell>
-                      <TableCell>
+                      <TableCell sx={HIDE_ON_PHONE}>
                         <Typography variant="body2">
                           {PAYMENT_METHOD_LABELS[exp.paymentMethod]}
                         </Typography>

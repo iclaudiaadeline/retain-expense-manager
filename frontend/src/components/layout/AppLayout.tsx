@@ -36,6 +36,50 @@ const PAGE_TITLES: Record<string, string> = {
   "/admin/categories": "Categories",
 };
 
+interface NavItemProps {
+  label: string;
+  path: string;
+  /** True when this is the page being shown. */
+  selected: boolean;
+  /** Called on click, so the mobile drawer can close. */
+  onClick: () => void;
+}
+
+/**
+ * One sidebar link. Defined outside AppLayout so React keeps the same component between renders;
+ * a component declared inside another is recreated, and remounted, every time the parent renders.
+ */
+function NavItem({ label, path, selected, onClick }: NavItemProps) {
+  return (
+    <ListItem disablePadding sx={{ mb: 0.5 }}>
+      <ListItemButton
+        component={RouterLink}
+        to={path}
+        selected={selected}
+        onClick={onClick}
+        sx={{
+          borderRadius: 2,
+          py: 1,
+          px: 1.5,
+          color: SIDEBAR_TEXT,
+          // The current page is a white pill with green text, so it stands out on the green sidebar
+          "&.Mui-selected": {
+            bgcolor: "white",
+            color: "primary.main",
+            "&:hover": { bgcolor: "white" },
+          },
+          "&:not(.Mui-selected):hover": { bgcolor: "rgba(255,255,255,0.1)" },
+        }}
+      >
+        <ListItemText
+          primary={label}
+          slotProps={{ primary: { sx: { fontSize: "0.875rem", fontWeight: selected ? 600 : 400 } } }}
+        />
+      </ListItemButton>
+    </ListItem>
+  );
+}
+
 export function AppLayout() {
   const { user, isAdmin, logout } = useAuth();
   const location = useLocation();
@@ -45,38 +89,6 @@ export function AppLayout() {
 
   function handleLogout() { logout(); navigate("/login"); }
   const close = () => setMobileOpen(false);
-
-  function NavItem({ label, path }: { label: string; path: string }) {
-    const selected = location.pathname === path;
-    return (
-      <ListItem disablePadding sx={{ mb: 0.5 }}>
-        <ListItemButton
-          component={RouterLink}
-          to={path}
-          selected={selected}
-          onClick={close}
-          sx={{
-            borderRadius: 2,
-            py: 1,
-            px: 1.5,
-            color: SIDEBAR_TEXT,
-            // The current page is a white pill with green text, so it stands out on the green sidebar
-            "&.Mui-selected": {
-              bgcolor: "white",
-              color: "primary.main",
-              "&:hover": { bgcolor: "white" },
-            },
-            "&:not(.Mui-selected):hover": { bgcolor: "rgba(255,255,255,0.1)" },
-          }}
-        >
-          <ListItemText
-            primary={label}
-            slotProps={{ primary: { sx: { fontSize: "0.875rem", fontWeight: selected ? 600 : 400 } } }}
-          />
-        </ListItemButton>
-      </ListItem>
-    );
-  }
 
   const sidebar = (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%", bgcolor: SIDEBAR_BG }}>
@@ -107,7 +119,7 @@ export function AppLayout() {
           </Typography>
           <List disablePadding>
             {adminNav.map(({ label, path }) => (
-              <NavItem key={path} label={label} path={path} />
+              <NavItem key={path} label={label} path={path} selected={location.pathname === path} onClick={close} />
             ))}
           </List>
         </Box>
@@ -115,7 +127,7 @@ export function AppLayout() {
         <Box sx={{ px: 1.5, pt: 2, pb: 1 }}>
           <List disablePadding>
             {userNav.map(({ label, path }) => (
-              <NavItem key={path} label={label} path={path} />
+              <NavItem key={path} label={label} path={path} selected={location.pathname === path} onClick={close} />
             ))}
           </List>
         </Box>

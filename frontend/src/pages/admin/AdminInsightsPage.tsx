@@ -5,6 +5,8 @@ import {
   TableHead, TableRow, Typography,
 } from "@mui/material";
 import { api } from "../../api/client";
+import { StatCard } from "../../components/StatCard";
+import { HIDE_ON_PHONE } from "../../utils/responsive";
 import type { AdminInsights } from "../../types/api";
 
 /** "1 expense", "3 expenses" */
@@ -117,9 +119,9 @@ export function AdminInsightsPage() {
                       <TableRow sx={{ bgcolor: "grey.50" }}>
                         <TableCell sx={{ fontWeight: 600 }}>Title</TableCell>
                         <TableCell sx={{ fontWeight: 600 }}>User</TableCell>
-                        <TableCell sx={{ fontWeight: 600 }}>Category</TableCell>
+                        <TableCell sx={{ fontWeight: 600, ...HIDE_ON_PHONE }}>Category</TableCell>
                         <TableCell align="right" sx={{ fontWeight: 600 }}>Amount</TableCell>
-                        <TableCell sx={{ fontWeight: 600 }}>Date</TableCell>
+                        <TableCell sx={{ fontWeight: 600, ...HIDE_ON_PHONE }}>Date</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -127,13 +129,13 @@ export function AdminInsightsPage() {
                         <TableRow key={exp.id} hover>
                           <TableCell>{exp.title}</TableCell>
                           <TableCell>{exp.user.name}</TableCell>
-                          <TableCell>
+                          <TableCell sx={HIDE_ON_PHONE}>
                             <Chip label={exp.category.name} size="small" variant="outlined" />
                           </TableCell>
                           <TableCell align="right" sx={{ fontWeight: 600 }}>
                             ${exp.amount.toFixed(2)}
                           </TableCell>
-                          <TableCell>{exp.date}</TableCell>
+                          <TableCell sx={HIDE_ON_PHONE}>{exp.date}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -168,16 +170,5 @@ export function AdminInsightsPage() {
         </Grid>
       </Grid>
     </Box>
-  );
-}
-
-function StatCard({ label, value }: { label: string; value: string | number }) {
-  return (
-    <Card>
-      <CardContent>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>{label}</Typography>
-        <Typography sx={{ fontWeight: 700, fontSize: "1.5rem" }}>{value}</Typography>
-      </CardContent>
-    </Card>
   );
 }

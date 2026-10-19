@@ -51,6 +51,7 @@ A personal expense and budget manager. Users record expenses, set a monthly budg
 - Every expense and budget request is limited to the signed-in user's own data. Another user's expense returns 404, so ids cannot be probed.
 - Admin endpoints check the role on the server, not only in the browser. Sign-up always creates a regular user.
 - All request bodies and query strings are validated with Zod, and errors come back with a message per field.
+- CORS only lets the app's own frontend call the API from a browser.
 
 ## How the frontend is built
 
@@ -124,12 +125,13 @@ backend/
 frontend/
   src/
     api/             API client
-    components/      Layout, route guards and expense components
+    components/      Layout, route guards, StatCard and expense components
     context/         Authentication context
-    hooks/           useAuth
+    hooks/           useAuth, useCategories
     pages/           One file per page, admin pages in pages/admin
     store/           Redux store and the filters slice
     types/           Shared TypeScript types
+    utils/           Budget status labels and colours, responsive helpers
 ```
 
 ## Setup
@@ -163,7 +165,7 @@ The API runs on http://localhost:5000. Check it with `GET /api/health`.
 | `DATABASE_URL` | Yes | PostgreSQL connection string |
 | `JWT_SECRET` | Yes | Secret used to sign login tokens. At least 16 characters; use a long random string. |
 | `PORT` | No | Port the API listens on (default 5000) |
-| `CLIENT_URL` | No | URL of the frontend (default http://localhost:5173) |
+| `CLIENT_URL` | No | Website(s) allowed to call the API, separated by commas (default http://localhost:5173). The deployed frontend is always allowed. |
 | `ADMIN_NAME`, `ADMIN_EMAIL`, `ADMIN_PASSWORD` | Only for `npm run seed` | The first admin account. The password needs at least 8 characters. |
 
 The backend checks these when it starts and stops with a clear message if one is missing or invalid.
