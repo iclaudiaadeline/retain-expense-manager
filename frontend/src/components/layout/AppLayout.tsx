@@ -11,6 +11,12 @@ import { useAuth } from "../../hooks/useAuth";
 
 const DRAWER_WIDTH = 256;
 
+// Sidebar colours: a dark shade of the brand green, with light text on top
+const SIDEBAR_BG = "#115e59";
+const SIDEBAR_TEXT = "rgba(255,255,255,0.85)";
+const SIDEBAR_MUTED = "rgba(255,255,255,0.65)";
+const SIDEBAR_LINE = "rgba(255,255,255,0.15)";
+
 const userNav = [
   { label: "Dashboard", path: "/dashboard" },
   { label: "Expenses",  path: "/expenses" },
@@ -40,12 +46,7 @@ export function AppLayout() {
   function handleLogout() { logout(); navigate("/login"); }
   const close = () => setMobileOpen(false);
 
-  function NavItem({
-    label, path, activeColor = "#0f766e", activeDark = "#0d6460",
-  }: {
-    label: string; path: string;
-    activeColor?: string; activeDark?: string;
-  }) {
+  function NavItem({ label, path }: { label: string; path: string }) {
     const selected = location.pathname === path;
     return (
       <ListItem disablePadding sx={{ mb: 0.5 }}>
@@ -58,12 +59,14 @@ export function AppLayout() {
             borderRadius: 2,
             py: 1,
             px: 1.5,
+            color: SIDEBAR_TEXT,
+            // The current page is a white pill with green text, so it stands out on the green sidebar
             "&.Mui-selected": {
-              bgcolor: activeColor,
-              color: "white",
-              "&:hover": { bgcolor: activeDark },
+              bgcolor: "white",
+              color: "primary.main",
+              "&:hover": { bgcolor: "white" },
             },
-            "&:not(.Mui-selected):hover": { bgcolor: "rgba(0,0,0,0.04)" },
+            "&:not(.Mui-selected):hover": { bgcolor: "rgba(255,255,255,0.1)" },
           }}
         >
           <ListItemText
@@ -76,20 +79,18 @@ export function AppLayout() {
   }
 
   const sidebar = (
-    <Box sx={{ display: "flex", flexDirection: "column", height: "100%", bgcolor: "background.paper" }}>
+    <Box sx={{ display: "flex", flexDirection: "column", height: "100%", bgcolor: SIDEBAR_BG }}>
 
       {/* Brand */}
       <Stack direction="row" spacing={1.5} sx={{ alignItems: "center", px: 3, py: 2.5 }}>
         <Typography
           component={RouterLink}
           to={isAdmin ? "/admin" : "/dashboard"}
-          sx={{ textDecoration: "none", color: "text.primary", fontWeight: 700, fontSize: "1.05rem" }}
+          sx={{ textDecoration: "none", color: "white", fontWeight: 700, fontSize: "1.05rem" }}
         >
           Retain
         </Typography>
       </Stack>
-
-      <Divider />
 
       {/* Each role sees only its own pages: users manage their money, admins manage the platform */}
       {isAdmin ? (
@@ -98,7 +99,7 @@ export function AppLayout() {
             variant="caption"
             sx={{
               px: 1.5, mb: 1.5, display: "block",
-              color: "text.disabled", fontWeight: 700,
+              color: SIDEBAR_MUTED, fontWeight: 700,
               letterSpacing: "0.08em", textTransform: "uppercase", fontSize: "0.68rem",
             }}
           >
@@ -106,8 +107,7 @@ export function AppLayout() {
           </Typography>
           <List disablePadding>
             {adminNav.map(({ label, path }) => (
-              <NavItem key={path} label={label} path={path}
-                activeColor="#4f46e5" activeDark="#4338ca" />
+              <NavItem key={path} label={label} path={path} />
             ))}
           </List>
         </Box>
@@ -124,16 +124,16 @@ export function AppLayout() {
       <Box sx={{ flexGrow: 1 }} />
 
       {/* User strip */}
-      <Divider />
+      <Divider sx={{ borderColor: SIDEBAR_LINE }} />
       <Stack direction="row" spacing={1.5} sx={{ alignItems: "center", px: 2.5, py: 2 }}>
-        <Avatar sx={{ width: 32, height: 32, bgcolor: "primary.main", fontSize: "0.8rem", fontWeight: 700, flexShrink: 0 }}>
+        <Avatar sx={{ width: 32, height: 32, bgcolor: "rgba(255,255,255,0.2)", color: "white", fontSize: "0.8rem", fontWeight: 700, flexShrink: 0 }}>
           {user?.name?.[0]?.toUpperCase()}
         </Avatar>
         <Box sx={{ minWidth: 0, flex: 1 }}>
-          <Typography variant="body2" noWrap sx={{ fontWeight: 600 }}>{user?.name}</Typography>
-          <Typography variant="caption" color="text.secondary" noWrap sx={{ display: "block" }}>{user?.email}</Typography>
+          <Typography variant="body2" noWrap sx={{ fontWeight: 600, color: "white" }}>{user?.name}</Typography>
+          <Typography variant="caption" noWrap sx={{ display: "block", color: SIDEBAR_MUTED }}>{user?.email}</Typography>
         </Box>
-        <IconButton size="small" onClick={handleLogout} title="Sign out" sx={{ color: "text.secondary", flexShrink: 0 }}>
+        <IconButton size="small" onClick={handleLogout} title="Sign out" sx={{ color: SIDEBAR_MUTED, flexShrink: 0, "&:hover": { color: "white" } }}>
           <LogoutIcon fontSize="small" />
         </IconButton>
       </Stack>
@@ -143,7 +143,7 @@ export function AppLayout() {
   return (
     <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "background.default" }}>
 
-      {/* Green top bar — page title on the left, avatar on the right */}
+      {/* White top bar — page title on the left, avatar on the right */}
       <AppBar
         position="fixed"
         elevation={0}
@@ -154,19 +154,19 @@ export function AppLayout() {
         }}
       >
         <Toolbar sx={{ minHeight: "60px !important", px: { xs: 2, sm: 3 } }}>
-          <IconButton edge="start" sx={{ mr: 1.5, display: { sm: "none" }, color: "white" }}
+          <IconButton edge="start" sx={{ mr: 1.5, display: { sm: "none" }, color: "text.primary" }}
             onClick={() => setMobileOpen(true)}>
             <MenuIcon />
           </IconButton>
 
           {/* Page title — left aligned */}
-          <Typography variant="h3" sx={{ flexGrow: 1, color: "white", fontWeight: 600, fontSize: "1rem" }}>
+          <Typography variant="h3" sx={{ flexGrow: 1, color: "text.primary", fontWeight: 600, fontSize: "1rem" }}>
             {PAGE_TITLES[location.pathname] ?? "Retain"}
           </Typography>
 
           {/* Avatar */}
           <IconButton onClick={(e) => setAnchorEl(e.currentTarget)} size="small" sx={{ p: 0 }}>
-            <Avatar sx={{ width: 34, height: 34, bgcolor: "rgba(255,255,255,0.2)", fontSize: "0.85rem", fontWeight: 700, color: "white", border: "2px solid rgba(255,255,255,0.4)" }}>
+            <Avatar sx={{ width: 34, height: 34, bgcolor: "primary.main", fontSize: "0.85rem", fontWeight: 700, color: "white" }}>
               {user?.name?.[0]?.toUpperCase()}
             </Avatar>
           </IconButton>
@@ -203,7 +203,7 @@ export function AppLayout() {
         sx={{
           display: { xs: "none", sm: "block" },
           width: DRAWER_WIDTH, flexShrink: 0,
-          "& .MuiDrawer-paper": { width: DRAWER_WIDTH, boxSizing: "border-box", borderRight: "1px solid #e5e7eb" },
+          "& .MuiDrawer-paper": { width: DRAWER_WIDTH, boxSizing: "border-box", borderRight: "none" },
         }}>
         {sidebar}
       </Drawer>
