@@ -109,7 +109,8 @@ export function BudgetPage() {
                       variant="determinate"
                       value={Math.min(summary.percentUsed, 100)}
                       color={progressColor(summary.status)}
-                      sx={{ height: 10, borderRadius: 5 }}
+                      // Grey track, so only the spent part is coloured and 0% looks empty
+                      sx={{ height: 10, borderRadius: 5, bgcolor: "divider" }}
                     />
                     <Stack direction="row" sx={{ justifyContent: "space-between", mt: 0.75 }}>
                       <Typography variant="caption" color="text.disabled">$0</Typography>
