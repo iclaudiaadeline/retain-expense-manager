@@ -3,10 +3,6 @@ import {
   Alert, Box, Card, CardContent, Chip, CircularProgress,
   Divider, Grid, LinearProgress, Stack, TextField, Typography,
 } from "@mui/material";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWalletOutlined";
-import ReceiptLongOutlinedIcon from "@mui/icons-material/ReceiptLongOutlined";
-import StarOutlineIcon from "@mui/icons-material/StarOutlined";
 import { api } from "../api/client";
 import type { Dashboard } from "../types/api";
 import { useAuth } from "../hooks/useAuth";
@@ -70,9 +66,6 @@ export function DashboardPage() {
           <Grid container spacing={2.5}>
             <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
               <StatCard
-                icon={<TrendingUpIcon />}
-                iconBg="#e8f5e9"
-                iconColor="#2e7d32"
                 label="Total spent"
                 value={`$${data.totalSpent.toFixed(2)}`}
                 sub={`${data.expenseCount} expense${data.expenseCount !== 1 ? "s" : ""} this month`}
@@ -80,9 +73,6 @@ export function DashboardPage() {
             </Grid>
             <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
               <StatCard
-                icon={<AccountBalanceWalletOutlinedIcon />}
-                iconBg={data.budget.status === "over" ? "#fce4ec" : "#e8f5e9"}
-                iconColor={data.budget.status === "over" ? "#c62828" : "#2e7d32"}
                 label="Budget remaining"
                 value={data.budget.remaining != null ? `$${data.budget.remaining.toFixed(2)}` : "Not set"}
                 sub={data.budget.status !== "none" ? STATUS_LABEL[data.budget.status] : "No budget set for this month"}
@@ -91,9 +81,6 @@ export function DashboardPage() {
             </Grid>
             <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
               <StatCard
-                icon={<ReceiptLongOutlinedIcon />}
-                iconBg="#e3f2fd"
-                iconColor="#1565c0"
                 label="Expenses recorded"
                 value={String(data.expenseCount)}
                 sub="transactions this month"
@@ -101,9 +88,6 @@ export function DashboardPage() {
             </Grid>
             <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
               <StatCard
-                icon={<StarOutlineIcon />}
-                iconBg="#fff8e1"
-                iconColor="#f57f17"
                 label="Highest expense"
                 value={data.highestExpense ? `$${data.highestExpense.amount.toFixed(2)}` : "None"}
                 sub={data.highestExpense?.title ?? "No expenses yet"}
@@ -126,7 +110,8 @@ export function DashboardPage() {
                   variant="determinate"
                   value={Math.min(data.budget.percentUsed, 100)}
                   color={STATUS_COLOR[data.budget.status]}
-                  sx={{ height: 10, borderRadius: 5 }}
+                  // Grey track, so only the spent part is coloured and 0% looks empty
+                  sx={{ height: 10, borderRadius: 5, bgcolor: "divider" }}
                 />
                 <Stack direction="row" sx={{ justifyContent: "space-between", mt: 1 }}>
                   <Typography variant="caption" color="text.secondary">
@@ -225,10 +210,7 @@ export function DashboardPage() {
   );
 }
 
-function StatCard({ icon, iconBg, iconColor, label, value, sub, subColor }: {
-  icon: React.ReactNode;
-  iconBg: string;
-  iconColor: string;
+function StatCard({ label, value, sub, subColor }: {
   label: string;
   value: string;
   sub?: string;
@@ -237,27 +219,17 @@ function StatCard({ icon, iconBg, iconColor, label, value, sub, subColor }: {
   return (
     <Card sx={{ height: "100%" }}>
       <CardContent>
-        <Stack direction="row" spacing={2} sx={{ alignItems: "flex-start" }}>
-          <Box sx={{
-            p: 1.25, borderRadius: 2, bgcolor: iconBg, color: iconColor,
-            display: "flex", flexShrink: 0,
-          }}>
-            {icon}
-          </Box>
-          <Box sx={{ minWidth: 0 }}>
-            <Typography variant="caption" color="text.secondary" sx={{ display: "block" }}>
-              {label}
-            </Typography>
-            <Typography sx={{ fontWeight: 700, fontSize: "1.35rem", lineHeight: 1.3, mt: 0.25 }}>
-              {value}
-            </Typography>
-            {sub && (
-              <Typography variant="caption" color={subColor ? `${subColor}.main` : "text.secondary"}>
-                {sub}
-              </Typography>
-            )}
-          </Box>
-        </Stack>
+        <Typography variant="caption" color="text.secondary" sx={{ display: "block" }}>
+          {label}
+        </Typography>
+        <Typography sx={{ fontWeight: 700, fontSize: "1.35rem", lineHeight: 1.3, mt: 0.25 }}>
+          {value}
+        </Typography>
+        {sub && (
+          <Typography variant="caption" color={subColor ? `${subColor}.main` : "text.secondary"}>
+            {sub}
+          </Typography>
+        )}
       </CardContent>
     </Card>
   );
