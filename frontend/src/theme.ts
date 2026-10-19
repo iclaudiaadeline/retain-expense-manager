@@ -67,13 +67,12 @@ export const theme = createTheme({
     MuiPaper: {
       styleOverrides: { outlined: { borderColor: "#e5e7eb" } },
     },
-    // Green top navbar
+    // White top navbar
     MuiAppBar: {
       styleOverrides: {
         root: {
-          backgroundColor: "#0f766e",
-          color: "#ffffff",
-          borderBottom: "none",
+          backgroundColor: "#ffffff",
+          color: "#111827",
         },
       },
     },
