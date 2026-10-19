@@ -4,10 +4,6 @@ import {
   Grid, Stack, Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, Typography,
 } from "@mui/material";
-import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
-import ReceiptLongOutlinedIcon from "@mui/icons-material/ReceiptLongOutlined";
-import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
-import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
 import { api } from "../../api/client";
 import type { AdminInsights } from "../../types/api";
 
@@ -38,20 +34,16 @@ export function AdminInsightsPage() {
 
       <Grid container spacing={2.5} sx={{ mb: 4 }}>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <StatCard icon={<PeopleOutlinedIcon />} iconBg="#e3f2fd" iconColor="#1565c0"
-            label="Total users" value={data.totalUsers} />
+          <StatCard label="Total users" value={data.totalUsers} />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <StatCard icon={<ReceiptLongOutlinedIcon />} iconBg="#e8f5e9" iconColor="#2e7d32"
-            label="Total expenses" value={data.totalExpenses} />
+          <StatCard label="Total expenses" value={data.totalExpenses} />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <StatCard icon={<AttachMoneyIcon />} iconBg="#fff8e1" iconColor="#f57f17"
-            label="Total value" value={`$${data.totalValue.toFixed(2)}`} />
+          <StatCard label="Total value" value={`$${data.totalValue.toFixed(2)}`} />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <StatCard icon={<CalendarTodayOutlinedIcon />} iconBg="#fce4ec" iconColor="#c62828"
-            label="Expenses this month" value={data.expensesThisMonth} />
+          <StatCard label="Expenses this month" value={data.expensesThisMonth} />
         </Grid>
       </Grid>
 
@@ -179,22 +171,11 @@ export function AdminInsightsPage() {
   );
 }
 
-function StatCard({ icon, iconBg, iconColor, label, value }: {
-  icon: React.ReactNode;
-  iconBg: string;
-  iconColor: string;
-  label: string;
-  value: string | number;
-}) {
+function StatCard({ label, value }: { label: string; value: string | number }) {
   return (
     <Card>
       <CardContent>
-        <Stack direction="row" spacing={2} sx={{ alignItems: "center", mb: 1.5 }}>
-          <Box sx={{ p: 1.25, borderRadius: 2, bgcolor: iconBg, color: iconColor, display: "flex" }}>
-            {icon}
-          </Box>
-          <Typography variant="body2" color="text.secondary">{label}</Typography>
-        </Stack>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>{label}</Typography>
         <Typography sx={{ fontWeight: 700, fontSize: "1.5rem" }}>{value}</Typography>
       </CardContent>
     </Card>
