@@ -2,29 +2,24 @@ import { useState } from "react";
 import { Link as RouterLink, Outlet, useLocation, useNavigate } from "react-router";
 import {
   AppBar, Avatar, Box, Divider, Drawer, IconButton,
-  List, ListItem, ListItemButton, ListItemIcon, ListItemText,
+  List, ListItem, ListItemButton, ListItemText,
   Menu, MenuItem, Stack, Toolbar, Typography,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import DashboardOutlinedIcon from "@mui/icons-material/DashboardOutlined";
-import ReceiptLongOutlinedIcon from "@mui/icons-material/ReceiptLongOutlined";
-import SavingsOutlinedIcon from "@mui/icons-material/SavingsOutlined";
-import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
-import CategoryOutlinedIcon from "@mui/icons-material/CategoryOutlined";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useAuth } from "../../hooks/useAuth";
 
 const DRAWER_WIDTH = 256;
 
 const userNav = [
-  { label: "Dashboard", path: "/dashboard", icon: <DashboardOutlinedIcon fontSize="small" /> },
-  { label: "Expenses",  path: "/expenses",  icon: <ReceiptLongOutlinedIcon fontSize="small" /> },
-  { label: "Budget",    path: "/budget",    icon: <SavingsOutlinedIcon fontSize="small" /> },
+  { label: "Dashboard", path: "/dashboard" },
+  { label: "Expenses",  path: "/expenses" },
+  { label: "Budget",    path: "/budget" },
 ];
 
 const adminNav = [
-  { label: "Insights",   path: "/admin",            icon: <AdminPanelSettingsOutlinedIcon fontSize="small" /> },
-  { label: "Categories", path: "/admin/categories", icon: <CategoryOutlinedIcon fontSize="small" /> },
+  { label: "Insights",   path: "/admin" },
+  { label: "Categories", path: "/admin/categories" },
 ];
 
 const PAGE_TITLES: Record<string, string> = {
@@ -46,9 +41,9 @@ export function AppLayout() {
   const close = () => setMobileOpen(false);
 
   function NavItem({
-    label, path, icon, activeColor = "#0f766e", activeDark = "#0d6460",
+    label, path, activeColor = "#0f766e", activeDark = "#0d6460",
   }: {
-    label: string; path: string; icon: React.ReactNode;
+    label: string; path: string;
     activeColor?: string; activeDark?: string;
   }) {
     const selected = location.pathname === path;
@@ -66,15 +61,11 @@ export function AppLayout() {
             "&.Mui-selected": {
               bgcolor: activeColor,
               color: "white",
-              "& .MuiListItemIcon-root": { color: "white" },
               "&:hover": { bgcolor: activeDark },
             },
             "&:not(.Mui-selected):hover": { bgcolor: "rgba(0,0,0,0.04)" },
           }}
         >
-          <ListItemIcon sx={{ minWidth: 34, color: selected ? "inherit" : "text.secondary" }}>
-            {icon}
-          </ListItemIcon>
           <ListItemText
             primary={label}
             slotProps={{ primary: { sx: { fontSize: "0.875rem", fontWeight: selected ? 600 : 400 } } }}
@@ -89,10 +80,9 @@ export function AppLayout() {
 
       {/* Brand */}
       <Stack direction="row" spacing={1.5} sx={{ alignItems: "center", px: 3, py: 2.5 }}>
-        <SavingsOutlinedIcon sx={{ fontSize: 22, color: "primary.main" }} />
         <Typography
           component={RouterLink}
-          to="/dashboard"
+          to={isAdmin ? "/admin" : "/dashboard"}
           sx={{ textDecoration: "none", color: "text.primary", fontWeight: 700, fontSize: "1.05rem" }}
         >
           Retain
@@ -101,38 +91,34 @@ export function AppLayout() {
 
       <Divider />
 
-      {/* User nav */}
-      <Box sx={{ px: 1.5, pt: 2, pb: 1 }}>
-        <List disablePadding>
-          {userNav.map(({ label, path, icon }) => (
-            <NavItem key={path} label={label} path={path} icon={icon} />
-          ))}
-        </List>
-      </Box>
-
-      {/* Admin nav — only shown to admins, clearly separated */}
-      {isAdmin && (
-        <>
-          <Divider sx={{ mx: 2 }} />
-          <Box sx={{ px: 1.5, pt: 2, pb: 1 }}>
-            <Typography
-              variant="caption"
-              sx={{
-                px: 1.5, mb: 1.5, display: "block",
-                color: "text.disabled", fontWeight: 700,
-                letterSpacing: "0.08em", textTransform: "uppercase", fontSize: "0.68rem",
-              }}
-            >
-              Admin
-            </Typography>
-            <List disablePadding>
-              {adminNav.map(({ label, path, icon }) => (
-                <NavItem key={path} label={label} path={path} icon={icon}
-                  activeColor="#4f46e5" activeDark="#4338ca" />
-              ))}
-            </List>
-          </Box>
-        </>
+      {/* Each role sees only its own pages: users manage their money, admins manage the platform */}
+      {isAdmin ? (
+        <Box sx={{ px: 1.5, pt: 2, pb: 1 }}>
+          <Typography
+            variant="caption"
+            sx={{
+              px: 1.5, mb: 1.5, display: "block",
+              color: "text.disabled", fontWeight: 700,
+              letterSpacing: "0.08em", textTransform: "uppercase", fontSize: "0.68rem",
+            }}
+          >
+            Admin
+          </Typography>
+          <List disablePadding>
+            {adminNav.map(({ label, path }) => (
+              <NavItem key={path} label={label} path={path}
+                activeColor="#4f46e5" activeDark="#4338ca" />
+            ))}
+          </List>
+        </Box>
+      ) : (
+        <Box sx={{ px: 1.5, pt: 2, pb: 1 }}>
+          <List disablePadding>
+            {userNav.map(({ label, path }) => (
+              <NavItem key={path} label={label} path={path} />
+            ))}
+          </List>
+        </Box>
       )}
 
       <Box sx={{ flexGrow: 1 }} />

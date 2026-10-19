@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 import { AdminRoute } from "./components/routing/AdminRoute";
 import { GuestRoute } from "./components/routing/GuestRoute";
 import { ProtectedRoute } from "./components/routing/ProtectedRoute";
+import { UserRoute } from "./components/routing/UserRoute";
 import { AppLayout } from "./components/layout/AppLayout";
 import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
@@ -24,9 +25,12 @@ function App() {
         {/* Signed-in users — wrapped in the app shell */}
         <Route element={<ProtectedRoute />}>
           <Route element={<AppLayout />}>
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/expenses" element={<ExpensesPage />} />
-            <Route path="/budget" element={<BudgetPage />} />
+            {/* Regular users only; admins are sent to /admin */}
+            <Route element={<UserRoute />}>
+              <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/expenses" element={<ExpensesPage />} />
+              <Route path="/budget" element={<BudgetPage />} />
+            </Route>
 
             {/* Admin only */}
             <Route element={<AdminRoute />}>
