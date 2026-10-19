@@ -1,20 +1,19 @@
 import { useCallback, useEffect, useState } from "react";
 import {
-  Alert, Box, Button, Chip, CircularProgress, Collapse, Dialog,
+  Alert, Box, Button, Chip, CircularProgress, Dialog,
   DialogActions, DialogContent, DialogTitle, Divider, IconButton,
   Pagination, Paper, Stack, Table, TableBody, TableCell,
-  TableContainer, TableHead, TableRow, Typography,
+  TableContainer, TableHead, TableRow, TableSortLabel, Typography,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutlined";
-import FilterListIcon from "@mui/icons-material/FilterList";
 import { api, ApiError } from "../api/client";
 import { ExpenseFilters } from "../components/expenses/ExpenseFilters";
 import { ExpenseForm } from "../components/expenses/ExpenseForm";
 import { useAppDispatch, useAppSelector } from "../store/store";
 import { resetFilters, setFilter, toExpenseQuery } from "../store/filtersSlice";
-import type { Expense, Paginated } from "../types/api";
+import type { Expense, Paginated, SortBy } from "../types/api";
 
 const METHOD_LABELS: Record<string, string> = {
   cash: "Cash",
@@ -35,7 +34,6 @@ export function ExpensesPage() {
   const [deleteTarget, setDeleteTarget] = useState<Expense | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
-  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -51,6 +49,16 @@ export function ExpensesPage() {
   }, [filters]);
 
   useEffect(() => { load(); }, [load]);
+
+  /** Clicking the sorted column flips the order; clicking another column sorts by it, highest/newest first. */
+  function handleSort(column: SortBy) {
+    if (filters.sortBy === column) {
+      dispatch(setFilter({ key: "sortOrder", value: filters.sortOrder === "desc" ? "asc" : "desc" }));
+    } else {
+      dispatch(setFilter({ key: "sortBy", value: column }));
+      dispatch(setFilter({ key: "sortOrder", value: "desc" }));
+    }
+  }
 
   function openCreate() { setEditing(null); setFormOpen(true); }
   function openEdit(exp: Expense) { setEditing(exp); setFormOpen(true); }
@@ -71,11 +79,6 @@ export function ExpensesPage() {
     }
   }
 
-  const activeFilterCount = [
-    filters.search, filters.categoryId, filters.paymentMethod,
-    filters.startDate, filters.endDate, filters.minAmount, filters.maxAmount,
-  ].filter(Boolean).length;
-
   return (
     <Box>
       <Stack direction={{ xs: "column", sm: "row" }} sx={{ justifyContent: "space-between", alignItems: { xs: "flex-start", sm: "center" }, gap: 2, mb: 4 }}>
@@ -87,30 +90,19 @@ export function ExpensesPage() {
             </Typography>
           )}
         </Box>
-        <Stack direction="row" sx={{ gap: 1.5 }}>
-          <Button
-            variant="outlined"
-            startIcon={<FilterListIcon />}
-            onClick={() => setFiltersOpen((o) => !o)}
-            color={activeFilterCount > 0 ? "primary" : "inherit"}
-          >
-            {activeFilterCount > 0 ? `Filters (${activeFilterCount})` : "Filters"}
-          </Button>
-          <Button variant="contained" startIcon={<AddIcon />} onClick={openCreate}>
-            Add expense
-          </Button>
-        </Stack>
+        <Button variant="contained" startIcon={<AddIcon />} onClick={openCreate}>
+          Add expense
+        </Button>
       </Stack>
 
-      <Collapse in={filtersOpen}>
-        <Paper variant="outlined" sx={{ p: 2.5, mb: 2.5, borderRadius: 2 }}>
-          <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-            <Typography variant="subtitle2">Filter & sort</Typography>
-            <Button size="small" onClick={() => dispatch(resetFilters())}>Reset</Button>
-          </Stack>
-          <ExpenseFilters />
-        </Paper>
-      </Collapse>
+      {/* Filters are always visible, so searching and filtering need no extra click */}
+      <Paper variant="outlined" sx={{ p: 2.5, mb: 2.5, borderRadius: 2 }}>
+        <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+          <Typography variant="subtitle2">Filters</Typography>
+          <Button size="small" onClick={() => dispatch(resetFilters())}>Reset</Button>
+        </Stack>
+        <ExpenseFilters />
+      </Paper>
 
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
@@ -126,9 +118,25 @@ export function ExpensesPage() {
                 <TableRow sx={{ bgcolor: "grey.50" }}>
                   <TableCell sx={{ fontWeight: 600 }}>Title</TableCell>
                   <TableCell sx={{ fontWeight: 600 }}>Category</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>Date</TableCell>
+                  <TableCell sx={{ fontWeight: 600 }} sortDirection={filters.sortBy === "date" ? filters.sortOrder : false}>
+                    <TableSortLabel
+                      active={filters.sortBy === "date"}
+                      direction={filters.sortBy === "date" ? filters.sortOrder : "desc"}
+                      onClick={() => handleSort("date")}
+                    >
+                      Date
+                    </TableSortLabel>
+                  </TableCell>
                   <TableCell sx={{ fontWeight: 600 }}>Payment</TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 600 }}>Amount</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 600 }} sortDirection={filters.sortBy === "amount" ? filters.sortOrder : false}>
+                    <TableSortLabel
+                      active={filters.sortBy === "amount"}
+                      direction={filters.sortBy === "amount" ? filters.sortOrder : "desc"}
+                      onClick={() => handleSort("amount")}
+                    >
+                      Amount
+                    </TableSortLabel>
+                  </TableCell>
                   <TableCell align="right" sx={{ fontWeight: 600 }}>Actions</TableCell>
                 </TableRow>
               </TableHead>
