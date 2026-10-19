@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import { Box, Card, CardContent, Stack, Typography } from "@mui/material";
-import SavingsOutlinedIcon from "@mui/icons-material/SavingsOutlined";
 
 interface AuthCardProps {
   title: string;
@@ -17,7 +16,6 @@ export function AuthCard({ title, subtitle, children, footer }: AuthCardProps) {
       <Card sx={{ width: "100%", maxWidth: 420 }}>
         <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
           <Stack spacing={1} sx={{ alignItems: "center", mb: 3, textAlign: "center" }}>
-            <SavingsOutlinedIcon color="primary" sx={{ fontSize: 40 }} />
             <Typography variant="h1" component="h1">
               {title}
             </Typography>
