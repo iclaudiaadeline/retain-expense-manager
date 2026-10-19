@@ -11,6 +11,11 @@ import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined
 import { api } from "../../api/client";
 import type { AdminInsights } from "../../types/api";
 
+/** "1 expense", "3 expenses" */
+function expenseCountLabel(count: number) {
+  return `${count} ${count === 1 ? "expense" : "expenses"}`;
+}
+
 export function AdminInsightsPage() {
   const [data, setData] = useState<AdminInsights | null>(null);
   const [loading, setLoading] = useState(true);
@@ -78,7 +83,7 @@ export function AdminInsightsPage() {
                       #{i + 1}
                     </Typography>
                     <Typography variant="body2" sx={{ flex: 1 }}>{c.name}</Typography>
-                    <Chip label={`${c.count} expenses`} size="small" color="primary" variant="outlined" sx={{ minWidth: 90, justifyContent: "center" }} />
+                    <Chip label={expenseCountLabel(c.count)} size="small" color="primary" variant="outlined" sx={{ minWidth: 90, justifyContent: "center" }} />
                   </Stack>
                 ))}
               </Stack>
@@ -97,7 +102,7 @@ export function AdminInsightsPage() {
                       #{i + 1}
                     </Typography>
                     <Typography variant="body2" sx={{ flex: 1 }}>{c.name}</Typography>
-                    <Chip label={`${c.count} expenses`} size="small" variant="outlined" sx={{ minWidth: 90, justifyContent: "center" }} />
+                    <Chip label={expenseCountLabel(c.count)} size="small" variant="outlined" sx={{ minWidth: 90, justifyContent: "center" }} />
                   </Stack>
                 ))}
               </Stack>
@@ -111,34 +116,38 @@ export function AdminInsightsPage() {
           <Card>
             <CardContent>
               <Typography variant="h3" sx={{ mb: 2.5 }}>Recent expenses</Typography>
-              <TableContainer>
-                <Table>
-                  <TableHead>
-                    <TableRow sx={{ bgcolor: "grey.50" }}>
-                      <TableCell>Title</TableCell>
-                      <TableCell>User</TableCell>
-                      <TableCell>Category</TableCell>
-                      <TableCell align="right">Amount</TableCell>
-                      <TableCell>Date</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {data.recentExpenses.map((exp) => (
-                      <TableRow key={exp.id} hover>
-                        <TableCell>{exp.title}</TableCell>
-                        <TableCell>{exp.user.name}</TableCell>
-                        <TableCell>
-                          <Chip label={exp.category.name} size="small" variant="outlined" />
-                        </TableCell>
-                        <TableCell align="right" sx={{ fontWeight: 600 }}>
-                          ${exp.amount.toFixed(2)}
-                        </TableCell>
-                        <TableCell>{exp.date}</TableCell>
+              {data.recentExpenses.length === 0 ? (
+                <Typography variant="body2" color="text.secondary">No expenses recorded yet.</Typography>
+              ) : (
+                <TableContainer>
+                  <Table>
+                    <TableHead>
+                      <TableRow sx={{ bgcolor: "grey.50" }}>
+                        <TableCell sx={{ fontWeight: 600 }}>Title</TableCell>
+                        <TableCell sx={{ fontWeight: 600 }}>User</TableCell>
+                        <TableCell sx={{ fontWeight: 600 }}>Category</TableCell>
+                        <TableCell align="right" sx={{ fontWeight: 600 }}>Amount</TableCell>
+                        <TableCell sx={{ fontWeight: 600 }}>Date</TableCell>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
+                    </TableHead>
+                    <TableBody>
+                      {data.recentExpenses.map((exp) => (
+                        <TableRow key={exp.id} hover>
+                          <TableCell>{exp.title}</TableCell>
+                          <TableCell>{exp.user.name}</TableCell>
+                          <TableCell>
+                            <Chip label={exp.category.name} size="small" variant="outlined" />
+                          </TableCell>
+                          <TableCell align="right" sx={{ fontWeight: 600 }}>
+                            ${exp.amount.toFixed(2)}
+                          </TableCell>
+                          <TableCell>{exp.date}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              )}
             </CardContent>
           </Card>
         </Grid>
