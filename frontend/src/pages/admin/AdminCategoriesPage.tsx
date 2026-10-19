@@ -24,9 +24,12 @@ export function AdminCategoriesPage() {
   const [deleteTarget, setDeleteTarget] = useState<Category | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  /** Success message after a delete, e.g. how many expenses moved to the default category. */
+  const [notice, setNotice] = useState<string | null>(null);
 
   function load() {
     setLoading(true);
+    setError(null);
     api.get<Category[]>("/categories")
       .then(setCategories)
       .catch(() => setError("Failed to load categories."))
@@ -39,6 +42,8 @@ export function AdminCategoriesPage() {
   function openEdit(cat: Category) { setEditing(cat); setName(cat.name); setNameError(""); setDialogOpen(true); }
 
   async function handleSave() {
+    // Pressing Enter again while a save is in progress would send a duplicate request
+    if (saving) return;
     if (!name.trim()) { setNameError("Name is required."); return; }
     setSaving(true);
     setNameError("");
@@ -61,8 +66,10 @@ export function AdminCategoriesPage() {
     if (!deleteTarget) return;
     setDeleting(true);
     setDeleteError(null);
+    setNotice(null);
     try {
-      await api.delete(`/categories/${deleteTarget.id}`);
+      const result = await api.delete<{ message: string; reassignedExpenses: number }>(`/categories/${deleteTarget.id}`);
+      setNotice(result.message);
       setDeleteTarget(null);
       load();
     } catch (err) {
@@ -88,6 +95,9 @@ export function AdminCategoriesPage() {
       </Stack>
 
       {error && <Alert severity="error" sx={{ mb: 3 }}>{error}</Alert>}
+      {notice && (
+        <Alert severity="success" onClose={() => setNotice(null)} sx={{ mb: 3, maxWidth: 640 }}>{notice}</Alert>
+      )}
 
       {loading ? (
         <Box sx={{ display: "grid", placeItems: "center", py: 10 }}>
