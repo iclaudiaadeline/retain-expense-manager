@@ -34,6 +34,7 @@ export function ExpensesPage() {
   const [editing, setEditing] = useState<Expense | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Expense | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   const load = useCallback(async () => {
@@ -57,11 +58,15 @@ export function ExpensesPage() {
   async function handleDelete() {
     if (!deleteTarget) return;
     setDeleting(true);
+    setDeleteError(null);
     try {
       await api.delete(`/expenses/${deleteTarget.id}`);
       setDeleteTarget(null);
       load();
-    } catch {
+    } catch (err) {
+      setDeleteError(err instanceof ApiError ? err.message : "Failed to delete expense.");
+    } finally {
+      // Reset on success too, otherwise the next delete dialog opens stuck on "Deleting..."
       setDeleting(false);
     }
   }
@@ -167,7 +172,7 @@ export function ExpensesPage() {
                         <IconButton size="small" onClick={() => openEdit(exp)}>
                           <EditOutlinedIcon fontSize="small" />
                         </IconButton>
-                        <IconButton size="small" color="error" onClick={() => setDeleteTarget(exp)}>
+                        <IconButton size="small" color="error" onClick={() => { setDeleteError(null); setDeleteTarget(exp); }}>
                           <DeleteOutlineIcon fontSize="small" />
                         </IconButton>
                       </TableCell>
@@ -203,6 +208,7 @@ export function ExpensesPage() {
       <Dialog open={Boolean(deleteTarget)} onClose={() => setDeleteTarget(null)} maxWidth="xs" fullWidth>
         <DialogTitle>Delete expense?</DialogTitle>
         <DialogContent>
+          {deleteError && <Alert severity="error" sx={{ mb: 2 }}>{deleteError}</Alert>}
           <Typography>
             Are you sure you want to delete <strong>{deleteTarget?.title}</strong>? This cannot be undone.
           </Typography>
