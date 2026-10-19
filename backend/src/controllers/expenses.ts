@@ -17,7 +17,7 @@ export interface Paginated<T> {
   pagination: { page: number; limit: number; total: number; totalPages: number };
 }
 
-/** Turns the query string into a database filter. userId is always set, so users only ever see their own expenses. */
+/** Builds DB filter from the query parameters. scoped to userId so users only ever see their own expenses. */
 function buildWhere(userId: string, q: ExpenseQuery): Prisma.ExpenseWhereInput {
   return {
     userId,
@@ -41,7 +41,7 @@ function buildWhere(userId: string, q: ExpenseQuery): Prisma.ExpenseWhereInput {
   };
 }
 
-/** Looks up an expense owned by this user. Someone else's expense gives 404, not 403, so ids cannot be probed. */
+/** finds a user's expense or throws a 404 error to hide whether an ID is valid. */
 async function findOwnedExpenseOr404(id: string, userId: string) {
   const expense = await prisma.expense.findFirst({ where: { id, userId }, include: expenseInclude });
   if (!expense) throw new HttpError(404, "Expense not found");
@@ -53,7 +53,7 @@ async function assertCategoryExists(categoryId: string): Promise<void> {
   if (!category) throw new HttpError(400, "Validation failed", { categoryId: "Category does not exist" });
 }
 
-/** GET /api/expenses?search=&categoryId=&paymentMethod=&startDate=&endDate=&minAmount=&maxAmount=&sortBy=&sortOrder=&page=&limit= */
+/** GET /api/expenses paginated expense search and filtering. */
 export async function listExpenses(req: Request, res: Response<Paginated<ExpenseDTO>>) {
   const user = currentUser(req);
   const q = parseQuery(expenseQuerySchema, req.query);
@@ -64,7 +64,7 @@ export async function listExpenses(req: Request, res: Response<Paginated<Expense
     prisma.expense.findMany({
       where,
       include: expenseInclude,
-      // createdAt as a tie-breaker keeps the order stable between pages.
+      // Fallback sort by createdAt to ensure a stable order when the primary sort field has duplicates.
       orderBy: [{ [q.sortBy]: q.sortOrder }, { createdAt: "desc" }],
       skip: (q.page - 1) * q.limit,
       take: q.limit,

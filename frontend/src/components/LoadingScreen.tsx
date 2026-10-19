@@ -1,6 +1,7 @@
 import { Box, CircularProgress } from "@mui/material";
 
-/** A centred spinner that fills the screen, shown while the app is checking who is signed in. */
+
+/** A centered spinner which takes up the entire screen when the app is verifying the user is signed in or not. */
 export function LoadingScreen() {
   return (
     <Box sx={{ minHeight: "100vh", display: "grid", placeItems: "center" }} role="status" aria-label="Loading">

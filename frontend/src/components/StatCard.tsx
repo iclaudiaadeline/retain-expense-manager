@@ -2,15 +2,15 @@ import { Card, CardContent, Typography } from "@mui/material";
 
 interface StatCardProps {
   label: string;
-  /** The big figure, e.g. "$120.00" or a count. */
+  /** the main value displayed on the card, such as an amount or a count. */
   value: string | number;
-  /** Optional small line under the figure. */
+  /** An optional note displayed below the main value. */
   sub?: string;
-  /** Colours the sub line, e.g. "error" when over budget. */
+  /** sets the note's color, for example, red when over budget. */
   subColor?: "success" | "warning" | "error" | "inherit";
 }
 
-/** A summary card with a label, a big figure and an optional note. Used on the user and admin dashboards. */
+/** Displays a summary cards with a title, value, and optional note on the dashboard. */
 export function StatCard({ label, value, sub, subColor }: StatCardProps) {
   return (
     <Card sx={{ height: "100%" }}>

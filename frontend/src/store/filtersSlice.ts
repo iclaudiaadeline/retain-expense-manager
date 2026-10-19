@@ -47,7 +47,8 @@ const filtersSlice = createSlice({
 
 export const { setFilter, resetFilters } = filtersSlice.actions;
 
-/** Converts FiltersState into a clean ExpenseQuery (omits empty strings). */
+
+/** A class to convert the FiltersState to a clean ExpenseQuery (excluding empty strings). */
 export function toExpenseQuery(filters: FiltersState): ExpenseQuery {
   return {
     ...(filters.search && { search: filters.search }),

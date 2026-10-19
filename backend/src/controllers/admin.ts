@@ -16,19 +16,19 @@ export interface AdminInsights {
   totalUsers: number;
   totalExpenses: number;
   totalValue: number;
-  /** Expenses recorded (created) during the current calendar month. */
+  /** The number of expenses recorded (created) during the current calendar month. */
   expensesThisMonth: number;
-  /** Every category, including unused ones, sorted by total spent. */
+  /** All categories sorted by total spent, including those without expenses. */
   spendingPerCategory: CategorySpending[];
-  /** Most-used categories, by number of expenses. */
+  /** categories with the most expenses. */
   topCategories: CategorySpending[];
-  /** Least-used categories, by number of expenses. Unused categories count as zero. */
+  /** categories with the fewest expenses, including unused ones. */
   bottomCategories: CategorySpending[];
   recentExpenses: AdminExpenseDTO[];
   recentUsers: AuthUser[];
 }
 
-/** GET /api/admin/insights. Platform-wide figures across all users. */
+/** Get spending and user statistics for the admin dashboard. */
 export async function getInsights(_req: Request, res: Response<AdminInsights>) {
   const { start, end } = monthRange(currentMonth());
 
@@ -46,7 +46,7 @@ export async function getInsights(_req: Request, res: Response<AdminInsights>) {
     prisma.user.findMany({ orderBy: { createdAt: "desc" }, take: RECENT_LIMIT }),
   ]);
 
-  // Start from all categories, so ones with no expenses still appear (with zero) in the rankings.
+  // Include every category, even those without expenses.
   const usage = new Map(grouped.map((g) => [g.categoryId, g]));
   const spendingPerCategory: CategorySpending[] = categories
     .map((c) => {

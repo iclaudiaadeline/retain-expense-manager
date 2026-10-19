@@ -2,7 +2,7 @@ import type { RequestHandler } from "express";
 import type { z, ZodType } from "zod";
 import { HttpError } from "../utils/HttpError";
 
-/** Parses data with a Zod schema, or throws a 400 listing the first problem with each field. */
+/** validates data with a Zod schema, throwing a 400 error if it fails. */
 export function parseOrThrow<S extends ZodType>(schema: S, data: unknown): z.output<S> {
   const result = schema.safeParse(data);
   if (!result.success) {
@@ -17,8 +17,8 @@ export function parseOrThrow<S extends ZodType>(schema: S, data: unknown): z.out
 }
 
 /**
- * Parses a query string. Empty values such as "?search=" are dropped first,
- * so a cleared filter on the frontend means "no filter" rather than a validation error.
+ * cleans empty query parameters (like ?search=) before parsing so blank 
+ * filters are treated as "no filter" instead of triggering validation errors. throws a 400 error if validation fails.
  */
 export function parseQuery<S extends ZodType>(schema: S, query: unknown): z.output<S> {
   const cleaned = Object.fromEntries(
@@ -27,7 +27,7 @@ export function parseQuery<S extends ZodType>(schema: S, query: unknown): z.outp
   return parseOrThrow(schema, cleaned);
 }
 
-/** Checks req.body against a Zod schema and replaces it with the parsed, typed result. */
+/** validates req.body against a Zod schema and attaches the parsed output to req.body. */
 export function validateBody(schema: ZodType): RequestHandler {
   return (req, _res, next) => {
     req.body = parseOrThrow(schema, req.body);

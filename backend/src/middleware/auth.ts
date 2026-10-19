@@ -23,9 +23,8 @@ declare global {
 }
 
 /**
- * Requires a valid "Authorization: Bearer <token>" header.
- * The user is loaded from the database on every request, so a deleted account
- * or a changed role takes effect immediately instead of when the token expires.
+ * validates Bearer token and fetches user from the database. attaches the user to req.user for use in later middleware and route handlers.
+ * If the token is missing, invalid, or expired, or if the user no longer exists, throws a 401 error.
  */
 export const requireAuth: RequestHandler = async (req, _res, next) => {
   const header = req.headers.authorization;
@@ -42,13 +41,13 @@ export const requireAuth: RequestHandler = async (req, _res, next) => {
   next();
 };
 
-/** Must come after requireAuth. Rejects everyone who is not an admin. */
+/** Requires a valid user with admin role. */
 export const requireAdmin: RequestHandler = (req, _res, next) => {
   if (req.user?.role !== "admin") throw new HttpError(403, "Admin access required");
   next();
 };
 
-/** For use inside routes protected by requireAuth, where the user is guaranteed to exist. */
+/** Returns the current user, throwing an error if they are not authenticated. */
 export function currentUser(req: Pick<Request, "user">): AuthUser {
   if (!req.user) throw new HttpError(401, "Authentication required");
   return req.user;

@@ -1,8 +1,7 @@
 import type { BudgetStatus } from "../types/api";
 
-// Keyed by BudgetStatus, so TypeScript reports a missing or misspelled status.
 
-/** How each budget status is described on screen. */
+// Each budget status has its own label to display in the app.
 export const BUDGET_STATUS_LABEL: Record<BudgetStatus, string> = {
   none: "No budget set",
   within: "Within budget",
@@ -10,7 +9,7 @@ export const BUDGET_STATUS_LABEL: Record<BudgetStatus, string> = {
   over: "Over budget",
 };
 
-/** Colour for a status Chip. Chip has no "inherit", so "none" uses "default". */
+// colors used for budget status chips. 
 export const BUDGET_STATUS_CHIP_COLOR: Record<BudgetStatus, "default" | "success" | "warning" | "error"> = {
   none: "default",
   within: "success",
@@ -18,7 +17,7 @@ export const BUDGET_STATUS_CHIP_COLOR: Record<BudgetStatus, "default" | "success
   over: "error",
 };
 
-/** Colour for progress bars and text. LinearProgress has no "default", so "none" uses "inherit". */
+// colors used for budget progress bars and text in the budget summary card.
 export const BUDGET_STATUS_COLOR: Record<BudgetStatus, "inherit" | "success" | "warning" | "error"> = {
   none: "inherit",
   within: "success",

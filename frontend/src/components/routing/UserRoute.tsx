@@ -3,9 +3,9 @@ import { useAuth } from "../../hooks/useAuth";
 import { LoadingScreen } from "../LoadingScreen";
 
 /**
- * Guards the personal pages (dashboard, expenses, budget). Admins manage the platform rather than
- * their own spending, so they are sent to the admin dashboard instead.
- * Must sit inside ProtectedRoute, which already handles visitors who are not signed in.
+ * Keeps admin users on the admin side of the app.
+ * Regular users can access their dashboard, expenses, and budget pages.
+ * This routes works with ProtectedRoute, which handles users who are not signed in at all.
  */
 export function UserRoute() {
   const { isAdmin, isLoading } = useAuth();

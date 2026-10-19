@@ -13,7 +13,7 @@ interface Props {
   onDelete: (expense: Expense) => void;
 }
 
-/** "2026-12-15" → "15 December 2026". Split by hand so the day is never shifted by the time zone. */
+/** "2026-12-15" → "15 December 2026". Divide manually, to avoid time zone moving the day. */
 function formatDay(day: string) {
   const [y, m, d] = day.split("-").map(Number);
   return new Date(y, m - 1, d).toLocaleDateString("default", { day: "numeric", month: "long", year: "numeric" });
@@ -24,7 +24,8 @@ function formatTimestamp(iso: string) {
   return new Date(iso).toLocaleDateString("default", { day: "numeric", month: "short", year: "numeric" });
 }
 
-/** One label/value line in the details list. */
+
+/** A single line in the details list. */
 function DetailRow({ label, children }: { label: string; children: ReactNode }) {
   return (
     <Stack direction="row" spacing={2} sx={{ alignItems: "flex-start" }}>
@@ -34,7 +35,7 @@ function DetailRow({ label, children }: { label: string; children: ReactNode }) 
   );
 }
 
-/** Read-only view of one expense, with every field in full. Edit and Delete hand over to the existing dialogs. */
+/** Read-only view of one expense, with every field in full. The Edit and Delete buttons are moved to the existing Edit and Delete dialogs. */
 export function ExpenseDetails({ expense, onClose, onEdit, onDelete }: Props) {
   return (
     <Dialog open={Boolean(expense)} onClose={onClose} fullWidth maxWidth="sm">

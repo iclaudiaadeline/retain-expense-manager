@@ -29,7 +29,7 @@ export interface DashboardResponse {
   recentExpenses: ExpenseDTO[];
 }
 
-/** GET /api/dashboard?month=YYYY-MM. Everything the user dashboard shows, for one month (default: current). */
+/** GET /api/dashboard Fetches the user dashboard overview for a given month (defaults to current month) */
 export async function getDashboard(req: Request, res: Response<DashboardResponse>) {
   const user = currentUser(req);
   const month = parseQuery(dashboardQuerySchema, req.query).month ?? currentMonth();

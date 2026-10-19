@@ -6,13 +6,13 @@ import type { BudgetInput } from "../schemas/budget";
 import { monthSchema } from "../schemas/common";
 import { getBudgetSummary, type BudgetSummary } from "../services/budgetSummary";
 
-/** GET /api/budgets/:month. Returns status "none" when no budget is set, rather than a 404. */
+/** Gets the budget for a month, returning "none" when no budget is set, rather than a 404. */
 export async function getBudget(req: Request<{ month: string }>, res: Response<BudgetSummary>) {
   const month = parseOrThrow(monthSchema, req.params.month);
   res.json(await getBudgetSummary(currentUser(req).id, month));
 }
 
-/** PUT /api/budgets/:month. Creates the month's budget, or replaces it if one exists. */
+/** save the budget for the given month or update it if it already exists. */
 export async function setBudget(req: Request<{ month: string }, unknown, BudgetInput>, res: Response<BudgetSummary>) {
   const user = currentUser(req);
   const month = parseOrThrow(monthSchema, req.params.month);

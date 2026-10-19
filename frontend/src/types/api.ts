@@ -151,7 +151,7 @@ export interface AdminExpense extends Expense {
   user: { id: string; name: string; email: string };
 }
 
-/** Returned by GET /admin/insights. */
+/** summary of the data shown on the admin insights page. */
 export interface AdminInsights {
   totalUsers: number;
   totalExpenses: number;
@@ -164,11 +164,11 @@ export interface AdminInsights {
   recentUsers: User[];
 }
 
-// ---------- Errors ----------
+// API errors
 
-/** Every error response from the API has this shape. */
+/** details returned when an API request fails. */
 export interface ApiErrorBody {
   message: string;
-  /** Field name to message, for validation errors. */
+  /** optional messages explaining  which fields need to be corrected. */
   errors?: Record<string, string>;
 }

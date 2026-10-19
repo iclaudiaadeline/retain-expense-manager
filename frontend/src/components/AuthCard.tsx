@@ -9,7 +9,7 @@ interface AuthCardProps {
   footer?: ReactNode;
 }
 
-/** The centred card shared by the sign-in and sign-up pages. Full width on phones, fixed width on larger screens. */
+/** This is the centre card for both sign-in and sign-up pages. On phones, it will be full width, on larger screens, it will be fixed width. */
 export function AuthCard({ title, subtitle, children, footer }: AuthCardProps) {
   return (
     <Box sx={{ minHeight: "100vh", display: "grid", placeItems: "center", px: 2, py: 4 }}>

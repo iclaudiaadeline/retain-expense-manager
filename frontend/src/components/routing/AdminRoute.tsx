@@ -3,8 +3,9 @@ import { useAuth } from "../../hooks/useAuth";
 import { LoadingScreen } from "../LoadingScreen";
 
 /**
- * Guards admin pages. Visitors go to /login; signed-in users who are not admins go back to their dashboard.
- * This only hides admin screens: the backend checks the role again on every admin request.
+* Makes sure only admins can access admin page.
+* visitors are sent to the login page , while  other signed-in users are sent to their dashboard.
+* The backend also checks admin permissions for every request, so this is just a convenience for the user experience.
  */
 export function AdminRoute() {
   const { user, isAdmin, isLoading, signedOut } = useAuth();
@@ -12,7 +13,7 @@ export function AdminRoute() {
 
   if (isLoading) return <LoadingScreen />;
   if (!user) {
-    // After a deliberate log out there is nothing to come back to, so no page is remembered.
+    // send signed-out  users to login without saving the page they left.
     return <Navigate to="/login" replace state={signedOut ? undefined : { from: location.pathname }} />;
   }
   if (!isAdmin) return <Navigate to="/dashboard" replace />;

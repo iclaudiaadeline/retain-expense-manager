@@ -15,11 +15,13 @@ export function ExpenseFilters() {
     dispatch(setFilter({ key, value }));
   }
 
-  // What is typed in the search box. It reaches Redux, and so the API, only after a short pause,
-  // so typing "lunch" sends one request instead of five.
+
+  // What is typed in the search box. After a brief delay, it gets to Redux, and so the API.
+  // If I type "lunch", only one call is made rather than 5
+
   const [searchText, setSearchText] = useState(filters.search);
 
-  // Follow Redux when the search changes from outside, e.g. the Reset button.
+  // When the search filter changes from outside (e.g., the Reset button), update the local state.
   useEffect(() => { setSearchText(filters.search); }, [filters.search]);
 
   useEffect(() => {

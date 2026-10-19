@@ -39,15 +39,15 @@ const PAGE_TITLES: Record<string, string> = {
 interface NavItemProps {
   label: string;
   path: string;
-  /** True when this is the page being shown. */
+  /** True when this link matches the current page. */
   selected: boolean;
-  /** Called on click, so the mobile drawer can close. */
+  /** closes the mobile drawer when the link is clicked. */
   onClick: () => void;
 }
 
 /**
- * One sidebar link. Defined outside AppLayout so React keeps the same component between renders;
- * a component declared inside another is recreated, and remounted, every time the parent renders.
+ * Renders a single link in the sidebar.
+ * Keeping this component outside AppLayout avoids it from being recreated every time the layout updated.
  */
 function NavItem({ label, path, selected, onClick }: NavItemProps) {
   return (

@@ -1,5 +1,6 @@
 /**
- * Spread into a TableCell's sx to hide that column on phones (xs) and show it from tablets (sm) up.
- * Use it on the header cell and on every body cell of the column, so they stay aligned.
+ * hides a table column on phones and shows it on tablets and larger screens.
+ * Applys this to both the column header and its cells to keep the table aligned.
  */
+ 
 export const HIDE_ON_PHONE = { display: { xs: "none", sm: "table-cell" } } as const;

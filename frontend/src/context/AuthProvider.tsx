@@ -3,10 +3,12 @@ import { api, getToken, setToken, setUnauthorizedHandler } from "../api/client";
 import type { AuthResponse, LoginInput, RegisterInput, User } from "../types/api";
 import { AuthContext, type AuthContextValue } from "./authContext";
 
-/** Holds the signed-in user and provides sign up, sign in and sign out to the whole app. */
+
+/**First of all, stores the user signed in, and offers sign up/service, sign in and sign out to the entire application. */
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  // Only "loading" at startup if there is a saved token to check.
+  
+  // Will only show "loading" at startup if there is a token that needs to be verified
   const [isLoading, setIsLoading] = useState<boolean>(() => getToken() !== null);
   const [signedOut, setSignedOut] = useState(false);
 
@@ -22,7 +24,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setSignedOut(true);
   }, [clearSession]);
 
-  // On first load, turn a saved token back into a user, so a page refresh keeps you signed in.
+  
+ //  On initial load, convert a saved token back to a user, thus maintaining user's login after a page refresh.
   useEffect(() => {
     if (!getToken()) return;
     let cancelled = false;
@@ -33,7 +36,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (!cancelled) setUser(user);
       })
       .catch(() => {
-        // Expired or invalid token: forget it, and the user simply sees the login page.
+      
+        
+       // In case this token has expired or is invalid, the user sees the login screen and forgets it.
         if (!cancelled) setToken(null);
       })
       .finally(() => {
@@ -45,8 +50,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  // If any request later answers 401 (the token expired), end the session without marking it as a sign out:
-  // the page guard then remembers the current page, so the user comes straight back after signing in again.
+
+  
+ // if any request later returns 401 (the token has expired), then end the session without setting it to sign out:
+//  The page guard then "remembers" the current page, and when the user logs into the system again, he/she returns immediately to the previous page.
   useEffect(() => {
     setUnauthorizedHandler(clearSession);
     return () => setUnauthorizedHandler(null);

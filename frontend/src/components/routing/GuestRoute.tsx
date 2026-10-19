@@ -2,14 +2,14 @@ import { Navigate, Outlet, useLocation } from "react-router";
 import { useAuth } from "../../hooks/useAuth";
 import { LoadingScreen } from "../LoadingScreen";
 
-/** Where ProtectedRoute or AdminRoute says the visitor was trying to go before being sent to sign in. */
+// stores the page the user wanted to visit before signing in.
 interface LocationState {
   from?: string;
 }
 
 /**
- * For the sign-in and sign-up pages: someone already signed in has no reason to see them.
- * This is also what moves the user on right after signing in: back to the page they wanted, otherwise to their home page.
+ * Handles access to the login and sign-up pages.
+ * If the user is already signed in , they are sent to their dashboard or admin page. 
  */
 export function GuestRoute() {
   const { user, isAdmin, isLoading } = useAuth();
